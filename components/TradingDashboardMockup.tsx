@@ -63,7 +63,7 @@ export default function TradingDashboardMockup({ className = "" }: { className?:
               </div>
             </div>
             <div className="mt-4 h-40 w-full sm:h-52">
-              <CandlestickChart className="h-full w-full" />
+              <CandlestickChart className="h-full w-full" live />
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
               {["RSI", "MACD", "MA (50)", "Bollinger Bands"].map((ind) => (

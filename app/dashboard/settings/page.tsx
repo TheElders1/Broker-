@@ -1,58 +1,41 @@
 import type { Metadata } from "next";
-import { PageHeader, Widget } from "@/components/dashboard/DashboardWidgets";
+import { PageHeader } from "@/components/dashboard/DashboardWidgets";
+import SettingsForm from "./SettingsForm";
+import { IS_SUPABASE_CONFIGURED } from "@/lib/supabaseMode";
+import { createClient } from "@/utils/supabase/server";
 
 export const metadata: Metadata = { title: "Settings" };
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  let initial = { userId: "", firstName: "", lastName: "", email: "", currency: "USD" };
+
+  if (IS_SUPABASE_CONFIGURED) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("first_name, last_name, email, currency")
+        .eq("id", user.id)
+        .single();
+      if (profile) {
+        initial = {
+          userId: user.id,
+          firstName: profile.first_name ?? "",
+          lastName: profile.last_name ?? "",
+          email: profile.email ?? user.email ?? "",
+          currency: profile.currency || "USD",
+        };
+      }
+    }
+  }
+
   return (
     <div>
       <PageHeader title="Settings" description="Manage your profile and account preferences." />
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Widget title="Profile Information">
-          <form className="flex flex-col gap-4">
-            <div>
-              <label htmlFor="fullName" className="label-field">
-                Full Name
-              </label>
-              <input id="fullName" className="input-field" placeholder="Your name" disabled />
-            </div>
-            <div>
-              <label htmlFor="settingsEmail" className="label-field">
-                Email Address
-              </label>
-              <input id="settingsEmail" type="email" className="input-field" placeholder="you@example.com" disabled />
-            </div>
-            <button type="submit" className="btn-outline w-fit cursor-not-allowed opacity-50" disabled>
-              Save Changes
-            </button>
-          </form>
-        </Widget>
-
-        <Widget title="Security">
-          <form className="flex flex-col gap-4">
-            <div>
-              <label htmlFor="currentPassword" className="label-field">
-                Current Password
-              </label>
-              <input id="currentPassword" type="password" className="input-field" disabled />
-            </div>
-            <div>
-              <label htmlFor="newPassword" className="label-field">
-                New Password
-              </label>
-              <input id="newPassword" type="password" className="input-field" disabled />
-            </div>
-            <button type="submit" className="btn-outline w-fit cursor-not-allowed opacity-50" disabled>
-              Update Password
-            </button>
-          </form>
-        </Widget>
-      </div>
-
-      <p className="mt-6 text-xs text-white/40">
-        Account settings are not yet connected to a live authentication backend.
-      </p>
+      <SettingsForm initial={initial} supabaseConfigured={IS_SUPABASE_CONFIGURED} />
     </div>
   );
 }

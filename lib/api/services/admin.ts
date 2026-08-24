@@ -10,6 +10,7 @@ import { IS_SUPABASE_CONFIGURED } from "@/lib/supabaseMode";
  *   GET    /admin/users                    -> AdminUser[]
  *   POST   /admin/users                    { firstName, lastName, email, accountType, initialBalanceUsd } -> AdminUser
  *   PATCH  /admin/users/:id/balance        { newBalanceUsd, reason? } -> AdminUser
+ *   PATCH  /admin/users/:id/tier           { accountType } -> AdminUser
  *   DELETE /admin/users/:id                -> 204
  *   GET    /admin/account-requests          -> AccountRequest[]
  *   PATCH  /admin/account-requests/:id      { status: "processed"|"dismissed" } -> AccountRequest
@@ -98,6 +99,25 @@ export async function updateUserBalance(
   return apiFetch<AdminUser>(`/admin/users/${encodeURIComponent(userId)}/balance`, {
     method: "PATCH",
     body: { newBalanceUsd, reason },
+  });
+}
+
+export async function updateUserTier(userId: string, accountType: AdminUser["accountType"]): Promise<AdminUser> {
+  if (IS_SUPABASE_CONFIGURED) {
+    return adminApiFetch<AdminUser>(`/users/${encodeURIComponent(userId)}/tier`, {
+      method: "PATCH",
+      body: { accountType },
+    });
+  }
+  if (IS_DEMO_MODE) {
+    const user = demoUsers.find((u) => u.id === userId);
+    if (!user) throw new Error("User not found.");
+    user.accountType = accountType;
+    return mockDelay({ ...user }, 400);
+  }
+  return apiFetch<AdminUser>(`/admin/users/${encodeURIComponent(userId)}/tier`, {
+    method: "PATCH",
+    body: { accountType },
   });
 }
 

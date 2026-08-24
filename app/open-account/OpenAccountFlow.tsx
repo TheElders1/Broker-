@@ -7,6 +7,7 @@ import Icon from "@/components/Icon";
 import { register } from "@/lib/api/services/auth";
 import { ApiError } from "@/lib/api/client";
 import { COUNTRIES } from "@/lib/countries";
+import { CURRENCIES } from "@/lib/currencies";
 
 const MIN_AGE = 18;
 const MIN_PASSWORD_LENGTH = 8;
@@ -340,9 +341,11 @@ export default function OpenAccountFlow() {
               value={data.currency}
               onChange={(e) => update("currency", e.target.value)}
             >
-              <option>USD</option>
-              <option>EUR</option>
-              <option>GBP</option>
+              {CURRENCIES.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.code} ({c.symbol}) — {c.name}
+                </option>
+              ))}
             </select>
           </Field>
           <div className="sm:col-span-2">

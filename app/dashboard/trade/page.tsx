@@ -13,7 +13,7 @@ export default function TradePage() {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr]">
         <Widget title="XAU/USD">
           <div className="h-64 w-full sm:h-80">
-            <CandlestickChart className="h-full w-full" />
+            <CandlestickChart className="h-full w-full" live />
           </div>
         </Widget>
 

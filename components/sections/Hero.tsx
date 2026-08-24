@@ -63,7 +63,7 @@ export default function Hero() {
             </div>
 
             <div className="mt-6 h-56 w-full sm:h-64">
-              <CandlestickChart className="h-full w-full" />
+              <CandlestickChart className="h-full w-full" live />
             </div>
 
             <div className="mt-6 grid grid-cols-3 gap-3 border-t border-white/[0.07] pt-6">

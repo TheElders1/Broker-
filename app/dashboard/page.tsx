@@ -72,7 +72,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="h-52 w-full sm:h-64">
-            <CandlestickChart className="h-full w-full" />
+            <CandlestickChart className="h-full w-full" live />
           </div>
         </Widget>
 

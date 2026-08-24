@@ -6,7 +6,7 @@ import Icon from "@/components/Icon";
 import { Widget, EmptyState } from "@/components/dashboard/DashboardWidgets";
 import { LoadingBlock, ErrorBlock } from "@/components/dashboard/ResourceState";
 import { useApiResource } from "@/lib/useApiResource";
-import { listUsers, updateUserBalance, deleteUser } from "@/lib/api/services/admin";
+import { listUsers, updateUserBalance, updateUserTier, deleteUser } from "@/lib/api/services/admin";
 import { ApiError } from "@/lib/api/client";
 import type { AdminUser } from "@/lib/api/types";
 
@@ -19,6 +19,7 @@ export default function AdminUsersView() {
   const [editing, setEditing] = useState<AdminUser | null>(null);
   const [deleting, setDeleting] = useState<AdminUser | null>(null);
   const [viewing, setViewing] = useState<AdminUser | null>(null);
+  const [assigningTier, setAssigningTier] = useState<AdminUser | null>(null);
 
   return (
     <div>
@@ -88,6 +89,13 @@ export default function AdminUsersView() {
                         </button>
                         <button
                           type="button"
+                          onClick={() => setAssigningTier(u)}
+                          className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-white/70 transition-colors hover:border-royal-400/40 hover:text-royal-300"
+                        >
+                          Assign Tier
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => setDeleting(u)}
                           className="rounded-lg border border-rose-500/25 px-3 py-1.5 text-xs font-semibold text-rose-300 transition-colors hover:border-rose-400/50 hover:bg-rose-500/10"
                         >
@@ -104,6 +112,17 @@ export default function AdminUsersView() {
       </Widget>
 
       {viewing ? <UserDetailsDialog user={viewing} onClose={() => setViewing(null)} /> : null}
+
+      {assigningTier ? (
+        <AssignTierDialog
+          user={assigningTier}
+          onClose={() => setAssigningTier(null)}
+          onSaved={() => {
+            setAssigningTier(null);
+            users.reload();
+          }}
+        />
+      ) : null}
 
       {editing ? (
         <EditBalanceDialog
@@ -171,6 +190,74 @@ function UserDetailsDialog({ user, onClose }: { user: AdminUser; onClose: () => 
         <div className="mt-6 flex justify-end border-t border-white/10 pt-6">
           <button type="button" onClick={onClose} className="btn-outline">
             Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const TIERS: AdminUser["accountType"][] = ["Basic", "Professional", "Premium"];
+
+function AssignTierDialog({
+  user,
+  onClose,
+  onSaved,
+}: {
+  user: AdminUser;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [tier, setTier] = useState<AdminUser["accountType"]>(user.accountType);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSave() {
+    setSaving(true);
+    setError(null);
+    try {
+      await updateUserTier(user.id, tier);
+      onSaved();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not update the account tier.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-ink-950/80 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+      <div className="relative w-full max-w-sm rounded-xl2 border border-white/10 bg-ink-900 p-6 shadow-2xl">
+        <h3 className="font-display text-lg font-semibold text-white">Assign Tier</h3>
+        <p className="mt-1 text-sm text-white/50">
+          {user.firstName} {user.lastName} &middot; {user.email}
+        </p>
+
+        {error ? <p className="mt-3 text-sm text-rose-400">{error}</p> : null}
+
+        <div className="mt-4">
+          <label htmlFor="tier" className="label-field">
+            Account Tier
+          </label>
+          <select
+            id="tier"
+            className="input-field"
+            value={tier}
+            onChange={(e) => setTier(e.target.value as AdminUser["accountType"])}
+          >
+            {TIERS.map((t) => (
+              <option key={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mt-6 flex gap-3">
+          <button type="button" onClick={onClose} className="btn-outline flex-1">
+            Cancel
+          </button>
+          <button type="button" onClick={handleSave} disabled={saving} className="btn-gold flex-1">
+            {saving ? "Saving..." : "Save"}
           </button>
         </div>
       </div>
