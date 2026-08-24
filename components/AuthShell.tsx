@@ -20,7 +20,7 @@ export default function AuthShell({
         <Logo />
         <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-white/60 hover:text-gold-300">
           <Icon name="arrow" className="h-4 w-4 rotate-180" />
-          Back to site
+          Back to Home
         </Link>
       </header>
 

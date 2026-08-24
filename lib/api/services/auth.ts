@@ -1,7 +1,9 @@
-import { apiFetch } from "../client";
+import { apiFetch, ApiError } from "../client";
 import { IS_DEMO_MODE } from "../config";
 import { MOCK_USER, mockDelay } from "../mock";
 import type { AuthSession, User } from "../types";
+import { IS_SUPABASE_CONFIGURED } from "@/lib/supabaseMode";
+import { createClient } from "@/utils/supabase/client";
 
 /**
  * Backend contract (VPS):
@@ -10,9 +12,52 @@ import type { AuthSession, User } from "../types";
  *   POST /auth/register     { ...registrationFields } -> { user }
  *   GET  /auth/session      -> { user }  (401 if not authenticated)
  *   POST /auth/forgot-password { email } -> 204
+ *
+ * When Supabase is configured (NEXT_PUBLIC_SUPABASE_URL set), auth runs
+ * against Supabase instead — see supabase/schema.sql. Accounts are
+ * created by an admin (lib/api/services/admin.ts), not self-registered,
+ * so `register` below still only queues an account_request either way.
  */
 
+type ProfileRow = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  account_type: User["accountType"];
+  kyc_status: User["kycStatus"];
+  created_at: string;
+};
+
+function profileToUser(profile: ProfileRow): User {
+  return {
+    id: profile.id,
+    firstName: profile.first_name,
+    lastName: profile.last_name,
+    email: profile.email,
+    accountType: profile.account_type,
+    kycStatus: profile.kyc_status,
+    createdAt: profile.created_at,
+  };
+}
+
 export async function login(email: string, password: string): Promise<AuthSession> {
+  if (IS_SUPABASE_CONFIGURED) {
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error || !data.user) {
+      throw new ApiError(error?.message ?? "Invalid email or password.", 401);
+    }
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, first_name, last_name, email, account_type, kyc_status, created_at")
+      .eq("id", data.user.id)
+      .single();
+    if (profileError || !profile) {
+      throw new ApiError("Signed in, but your account profile could not be loaded.", 500);
+    }
+    return { user: profileToUser(profile as ProfileRow) };
+  }
   if (IS_DEMO_MODE) {
     return mockDelay({ user: MOCK_USER });
   }
@@ -20,6 +65,11 @@ export async function login(email: string, password: string): Promise<AuthSessio
 }
 
 export async function logout(): Promise<void> {
+  if (IS_SUPABASE_CONFIGURED) {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    return;
+  }
   if (IS_DEMO_MODE) {
     return mockDelay(undefined, 200);
   }
@@ -27,6 +77,20 @@ export async function logout(): Promise<void> {
 }
 
 export async function getSession(): Promise<AuthSession | null> {
+  if (IS_SUPABASE_CONFIGURED) {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return null;
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id, first_name, last_name, email, account_type, kyc_status, created_at")
+      .eq("id", user.id)
+      .single();
+    if (!profile) return null;
+    return { user: profileToUser(profile as ProfileRow) };
+  }
   if (IS_DEMO_MODE) {
     return mockDelay(null, 200);
   }

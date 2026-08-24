@@ -23,6 +23,8 @@ export default function CreateUserForm() {
   const [initialBalance, setInitialBalance] = useState("0");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [createdPassword, setCreatedPassword] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const fromRequest = searchParams.get("fromRequest");
 
@@ -45,13 +47,64 @@ export default function CreateUserForm() {
     setSubmitting(true);
     setError(null);
     try {
-      await createUser({ firstName, lastName, email, accountType, initialBalanceUsd: balance });
-      router.push("/admin/users");
+      const result = await createUser({ firstName, lastName, email, accountType, initialBalanceUsd: balance });
+      if (result.temporaryPassword) {
+        setCreatedPassword(result.temporaryPassword);
+      } else {
+        router.push("/admin/users");
+      }
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Could not create the user.");
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function handleCopyPassword() {
+    if (!createdPassword) return;
+    try {
+      await navigator.clipboard.writeText(createdPassword);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  if (createdPassword) {
+    return (
+      <div className="glass-card max-w-2xl p-6 sm:p-8">
+        <div className="flex items-start gap-2.5 rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm text-emerald-300">
+          <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0" />
+          <p>
+            Account created for {firstName} {lastName} ({email}).
+          </p>
+        </div>
+
+        <div className="mt-6">
+          <p className="label-field">One-time temporary password</p>
+          <div className="flex items-center gap-2">
+            <code className="flex-1 truncate rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white">
+              {createdPassword}
+            </code>
+            <button type="button" onClick={handleCopyPassword} className="btn-outline shrink-0">
+              <Icon name={copied ? "check" : "copy"} className="h-4 w-4" />
+              {copied ? "Copied" : "Copy"}
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-white/40">
+            Supabase never exposes this again after you leave this page. Send it to the client
+            through a secure channel now and tell them to change it after their first login.
+          </p>
+        </div>
+
+        <div className="mt-6 flex justify-end border-t border-white/10 pt-6">
+          <button type="button" onClick={() => router.push("/admin/users")} className="btn-gold">
+            Done
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

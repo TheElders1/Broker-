@@ -8,11 +8,19 @@ import Icon from "@/components/Icon";
 import DemoBadge from "@/components/DemoBadge";
 import { DASHBOARD_NAV } from "@/lib/dashboardNav";
 import { SESSION_EXPIRED_EVENT } from "@/lib/api/client";
+import { logout } from "@/lib/api/services/auth";
 
-export default function DashboardShell({ children }: { children: React.ReactNode }) {
+export default function DashboardShell({
+  children,
+  displayName,
+}: {
+  children: React.ReactNode;
+  displayName?: string | null;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     function handleSessionExpired() {
@@ -21,6 +29,16 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
     return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
   }, [router]);
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      router.push("/login");
+      router.refresh();
+    }
+  }
 
   const navList = (
     <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4" aria-label="Dashboard">
@@ -42,13 +60,15 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           </Link>
         );
       })}
-      <Link
-        href="/"
-        className="mt-4 flex items-center gap-3 rounded-lg border-t border-white/10 px-3.5 pt-5 text-sm font-medium text-white/50 transition-colors hover:text-rose-300"
+      <button
+        type="button"
+        onClick={handleLogout}
+        disabled={loggingOut}
+        className="mt-4 flex items-center gap-3 rounded-lg border-t border-white/10 px-3.5 pt-5 text-sm font-medium text-white/50 transition-colors hover:text-rose-300 disabled:opacity-50"
       >
         <Icon name="close" className="h-[18px] w-[18px]" />
-        Logout
-      </Link>
+        {loggingOut ? "Signing out..." : "Logout"}
+      </button>
     </nav>
   );
 
@@ -102,7 +122,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               <div>
                 <p className="text-xs text-white/40">Client Area</p>
                 <p className="font-display text-base font-semibold text-white">
-                  Welcome back
+                  {displayName ? `Welcome back, ${displayName}` : "Welcome back"}
                 </p>
               </div>
             </div>

@@ -358,7 +358,7 @@ export const CONTACT_DETAILS = {
   email: "genesisproltd@gmail.com",
   phone: "+1 (631) 555-0148",
   address: "4145 Middle Country Road, Calverton, NY 11933",
-  hours: "[Insert verified business hours]",
+  hours: "24/5 — Sunday 5:00 PM to Friday 5:00 PM ET, following global market hours",
 };
 
 // Social links intentionally left empty. Only add an entry here once an

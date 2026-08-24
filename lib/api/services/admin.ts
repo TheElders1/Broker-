@@ -1,8 +1,9 @@
-import { apiFetch } from "../client";
+import { apiFetch, ApiError } from "../client";
 import { IS_DEMO_MODE } from "../config";
 import { mockDelay } from "../mock";
 import { accountRequestsStore, adminUsersStore } from "../demoStore";
 import type { AccountRequest, AdminUser, CreateUserPayload } from "../types";
+import { IS_SUPABASE_CONFIGURED } from "@/lib/supabaseMode";
 
 /**
  * Backend contract (VPS):
@@ -20,17 +21,45 @@ import type { AccountRequest, AdminUser, CreateUserPayload } from "../types";
  * excluded from search indexing, but that is not access control; real
  * deployments must gate the route itself behind authenticated admin
  * login before any of this data is fetched.
+ *
+ * When Supabase is configured, this instead calls this app's own
+ * app/api/admin/* Route Handlers (not Supabase directly — the browser
+ * never holds the service-role key). Those routes re-verify the admin
+ * session cookie themselves and use utils/supabase/admin.ts to bypass RLS.
  */
 
 const demoUsers = adminUsersStore;
 const demoRequests = accountRequestsStore;
 
+async function adminApiFetch<T>(path: string, options: { method?: string; body?: unknown } = {}): Promise<T> {
+  const res = await fetch(`/api/admin${path}`, {
+    method: options.method ?? "GET",
+    headers: options.body !== undefined ? { "Content-Type": "application/json" } : undefined,
+    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({ message: `Request failed with status ${res.status}.` }));
+    throw new ApiError(data.message ?? "Request failed.", res.status);
+  }
+  if (res.status === 204) return undefined as T;
+  return (await res.json()) as T;
+}
+
 export async function listUsers(): Promise<AdminUser[]> {
+  if (IS_SUPABASE_CONFIGURED) return adminApiFetch<AdminUser[]>("/users");
   if (IS_DEMO_MODE) return mockDelay([...demoUsers]);
   return apiFetch<AdminUser[]>("/admin/users");
 }
 
-export async function createUser(payload: CreateUserPayload): Promise<AdminUser> {
+export async function createUser(
+  payload: CreateUserPayload
+): Promise<{ user: AdminUser; temporaryPassword?: string }> {
+  if (IS_SUPABASE_CONFIGURED) {
+    return adminApiFetch<{ user: AdminUser; temporaryPassword: string }>("/users", {
+      method: "POST",
+      body: payload,
+    });
+  }
   if (IS_DEMO_MODE) {
     const user: AdminUser = {
       id: `admin-demo-user-${Date.now()}`,
@@ -43,9 +72,10 @@ export async function createUser(payload: CreateUserPayload): Promise<AdminUser>
       createdAt: new Date().toISOString(),
     };
     demoUsers.unshift(user);
-    return mockDelay(user, 600);
+    return mockDelay({ user }, 600);
   }
-  return apiFetch<AdminUser>("/admin/users", { method: "POST", body: payload });
+  const user = await apiFetch<AdminUser>("/admin/users", { method: "POST", body: payload });
+  return { user };
 }
 
 export async function updateUserBalance(
@@ -53,6 +83,12 @@ export async function updateUserBalance(
   newBalanceUsd: number,
   reason?: string
 ): Promise<AdminUser> {
+  if (IS_SUPABASE_CONFIGURED) {
+    return adminApiFetch<AdminUser>(`/users/${encodeURIComponent(userId)}/balance`, {
+      method: "PATCH",
+      body: { newBalanceUsd, reason },
+    });
+  }
   if (IS_DEMO_MODE) {
     const user = demoUsers.find((u) => u.id === userId);
     if (!user) throw new Error("User not found.");
@@ -66,6 +102,9 @@ export async function updateUserBalance(
 }
 
 export async function deleteUser(userId: string): Promise<void> {
+  if (IS_SUPABASE_CONFIGURED) {
+    return adminApiFetch<void>(`/users/${encodeURIComponent(userId)}`, { method: "DELETE" });
+  }
   if (IS_DEMO_MODE) {
     const idx = demoUsers.findIndex((u) => u.id === userId);
     if (idx !== -1) demoUsers.splice(idx, 1);
@@ -75,6 +114,7 @@ export async function deleteUser(userId: string): Promise<void> {
 }
 
 export async function listAccountRequests(): Promise<AccountRequest[]> {
+  if (IS_SUPABASE_CONFIGURED) return adminApiFetch<AccountRequest[]>("/account-requests");
   if (IS_DEMO_MODE) return mockDelay([...demoRequests]);
   return apiFetch<AccountRequest[]>("/admin/account-requests");
 }
@@ -83,6 +123,12 @@ export async function updateAccountRequestStatus(
   requestId: string,
   status: "processed" | "dismissed"
 ): Promise<AccountRequest> {
+  if (IS_SUPABASE_CONFIGURED) {
+    return adminApiFetch<AccountRequest>(`/account-requests/${encodeURIComponent(requestId)}`, {
+      method: "PATCH",
+      body: { status },
+    });
+  }
   if (IS_DEMO_MODE) {
     const req = demoRequests.find((r) => r.id === requestId);
     if (!req) throw new Error("Request not found.");
