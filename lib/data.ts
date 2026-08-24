@@ -205,42 +205,229 @@ export const ACCOUNT_TYPES: AccountType[] = [
 
 export const EDUCATION_TOPICS = [
   {
+    slug: "beginners-guide-to-trading",
     title: "Beginner's Guide to Trading",
     description:
       "Start with the fundamentals — key terminology, how markets work, and how to place your first trade.",
     icon: "compass",
   },
   {
+    slug: "forex-fundamentals",
     title: "Forex Fundamentals",
     description:
       "Understand currency pairs, pips, and the forces that move foreign exchange markets.",
     icon: "currency",
   },
   {
+    slug: "technical-analysis",
     title: "Technical Analysis",
     description:
       "Learn how traders use charts, patterns, and indicators to study price behaviour.",
     icon: "trending",
   },
   {
+    slug: "risk-management",
     title: "Risk Management",
     description:
       "Explore concepts like stop-loss orders, position sizing, and protecting your capital.",
     icon: "shield-check",
   },
   {
+    slug: "market-psychology",
     title: "Market Psychology",
     description:
       "Understand the emotional and behavioural factors that influence trading decisions.",
     icon: "brain",
   },
   {
+    slug: "trading-strategies",
     title: "Trading Strategies",
     description:
       "An overview of common strategic approaches traders use to plan their market activity.",
     icon: "strategy",
   },
 ];
+
+export const EDUCATION_ARTICLES: Record<
+  string,
+  { intro: string; sections: { heading: string; body: string[] }[] }
+> = {
+  "beginners-guide-to-trading": {
+    intro:
+      "A starting point for understanding what trading involves before you place your first order.",
+    sections: [
+      {
+        heading: "What Trading Means",
+        body: [
+          "Trading is the practice of buying and selling financial instruments — currencies, commodities, indices, stocks, or cryptocurrencies — with the aim of profiting from changes in their price. Every trade has two sides: the price you enter at, and the price you exit at.",
+        ],
+      },
+      {
+        heading: "Key Terms Worth Knowing",
+        body: [
+          "A 'position' is an open trade. 'Long' means you profit if the price rises; 'short' means you profit if it falls. 'Spread' is the small difference between the buy and sell price. 'Leverage' lets you control a larger position than your account balance alone would allow — it magnifies both gains and losses.",
+        ],
+      },
+      {
+        heading: "Placing a First Trade",
+        body: [
+          "Most platforms follow the same basic steps: choose an instrument, decide on a direction (buy or sell), set a size, and optionally attach a stop-loss and take-profit level before confirming. Practising on a demo account before using real funds is a common way to get comfortable with the process.",
+        ],
+      },
+      {
+        heading: "Before You Start",
+        body: [
+          "Trading involves risk of loss, and no outcome is guaranteed. New traders benefit from starting small, understanding the instruments they trade, and reading the Risk Disclosure in full before committing real capital.",
+        ],
+      },
+    ],
+  },
+  "forex-fundamentals": {
+    intro: "The basics of how the foreign exchange (forex) market works.",
+    sections: [
+      {
+        heading: "Currency Pairs",
+        body: [
+          "Forex is always traded in pairs, such as EUR/USD, because you're simultaneously buying one currency and selling another. The first currency listed is the 'base' currency; the second is the 'quote' currency. The price tells you how much of the quote currency it takes to buy one unit of the base currency.",
+        ],
+      },
+      {
+        heading: "Pips and Price Movement",
+        body: [
+          "A 'pip' is the smallest standard price movement for a currency pair — typically the fourth decimal place (e.g., 1.0842 to 1.0843 is one pip). Pip movements are used to measure gains, losses, and spreads across the market.",
+        ],
+      },
+      {
+        heading: "What Moves Currency Markets",
+        body: [
+          "Exchange rates are influenced by interest rate decisions, inflation data, employment figures, political events, and overall market sentiment. Because so many factors interact at once, currency prices can move quickly and are not fully predictable.",
+        ],
+      },
+      {
+        heading: "Market Hours",
+        body: [
+          "Forex trades nearly continuously across global sessions — Sydney, Tokyo, London, and New York — from Sunday evening through Friday evening (in most time zones), since as one financial centre closes, another opens.",
+        ],
+      },
+    ],
+  },
+  "technical-analysis": {
+    intro: "An introduction to studying price charts to inform trading decisions.",
+    sections: [
+      {
+        heading: "The Core Idea",
+        body: [
+          "Technical analysis is the study of historical price and volume data — usually via charts — on the assumption that price patterns can offer insight into potential future behaviour. It's distinct from fundamental analysis, which looks at underlying economic or company data.",
+        ],
+      },
+      {
+        heading: "Chart Types",
+        body: [
+          "Candlestick charts are the most common format: each 'candle' shows the open, high, low, and close price for a given time period, and its colour indicates whether price rose or fell over that period.",
+        ],
+      },
+      {
+        heading: "Common Indicators",
+        body: [
+          "Moving averages smooth out price data to show the general trend direction. RSI (Relative Strength Index) measures the speed of recent price changes to gauge whether an instrument may be overbought or oversold. MACD compares two moving averages to highlight potential shifts in momentum. Bollinger Bands measure volatility relative to a moving average.",
+        ],
+      },
+      {
+        heading: "A Tool, Not a Guarantee",
+        body: [
+          "No indicator or pattern reliably predicts future price movement. Technical analysis is one input among many that traders use to inform decisions — it does not eliminate the risk of loss.",
+        ],
+      },
+    ],
+  },
+  "risk-management": {
+    intro: "Core concepts for managing risk when trading financial markets.",
+    sections: [
+      {
+        heading: "Why Risk Management Matters",
+        body: [
+          "Even a sound trading idea can lose money if position sizes are too large or losses aren't controlled. Risk management is about protecting your capital so that no single trade — or string of trades — can cause disproportionate damage to your account.",
+        ],
+      },
+      {
+        heading: "Stop-Loss Orders",
+        body: [
+          "A stop-loss is an instruction to automatically close a position once it reaches a predetermined, less favourable price, capping potential loss on that trade. It doesn't guarantee execution at the exact level specified, particularly in fast-moving markets.",
+        ],
+      },
+      {
+        heading: "Position Sizing",
+        body: [
+          "Position sizing is deciding how much capital to risk on a single trade relative to your total account. Many traders risk only a small percentage of their account on any one position, so that a series of losses doesn't erode the account significantly.",
+        ],
+      },
+      {
+        heading: "Diversification and Leverage Awareness",
+        body: [
+          "Spreading exposure across different instruments, rather than concentrating risk in one, is a common way to reduce the impact of any single adverse move. Where leverage is used, it's worth remembering it magnifies losses just as much as gains — understand the mechanics fully before using it.",
+        ],
+      },
+    ],
+  },
+  "market-psychology": {
+    intro: "How emotions and behaviour influence trading decisions — and how to manage them.",
+    sections: [
+      {
+        heading: "Fear and Greed",
+        body: [
+          "Two emotions are frequently cited as driving poor trading decisions: fear (closing a position too early, or avoiding a valid opportunity) and greed (holding a position too long, or taking on excessive risk chasing a bigger gain).",
+        ],
+      },
+      {
+        heading: "Common Behavioural Patterns",
+        body: [
+          "Traders often describe 'revenge trading' — increasing risk to quickly recover a previous loss — as a particularly damaging habit. Overconfidence after a winning streak, and hesitation after a losing one, are also widely discussed patterns worth watching for in your own behaviour.",
+        ],
+      },
+      {
+        heading: "Building Discipline",
+        body: [
+          "Having a plan before entering a trade — including your reason for entering, your stop-loss level, and your target — and sticking to it regardless of how the market moves in between, is one way traders try to reduce emotionally-driven decisions.",
+        ],
+      },
+      {
+        heading: "Keeping Perspective",
+        body: [
+          "No single trade defines a trading approach. Reviewing decisions objectively over time, rather than reacting to any one outcome, is a habit many experienced traders describe as valuable — though it does not remove the underlying risk of loss.",
+        ],
+      },
+    ],
+  },
+  "trading-strategies": {
+    intro: "A general overview of strategic approaches traders use — not a recommendation of any one.",
+    sections: [
+      {
+        heading: "Day Trading",
+        body: [
+          "Day trading involves opening and closing positions within the same trading day, aiming to profit from short-term price movements without holding positions overnight.",
+        ],
+      },
+      {
+        heading: "Swing Trading",
+        body: [
+          "Swing trading involves holding positions for several days to weeks, aiming to capture a larger price move than intraday trading, while accepting the risk of overnight and weekend price gaps.",
+        ],
+      },
+      {
+        heading: "Position Trading",
+        body: [
+          "Position trading takes a longer-term view, often holding for weeks or months based on broader trends, and typically places less emphasis on short-term price fluctuations.",
+        ],
+      },
+      {
+        heading: "Choosing an Approach",
+        body: [
+          "The right approach depends on factors like the time you can dedicate, your risk tolerance, and your familiarity with the instruments involved. Whatever the approach, it carries risk of loss and should be paired with sound risk management.",
+        ],
+      },
+    ],
+  },
+};
 
 export const RISK_TOPICS = [
   {

@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/adminAuth";
 import { createAdminClient } from "@/utils/supabase/admin";
 
+const PROFILE_COLUMNS =
+  "id, first_name, last_name, email, account_type, status, balance_usd, created_at, date_of_birth, phone, address, city, postal_code, country, currency, experience";
+
 type ProfileRow = {
   id: string;
   first_name: string;
@@ -12,6 +15,14 @@ type ProfileRow = {
   status: "active" | "suspended";
   balance_usd: number;
   created_at: string;
+  date_of_birth: string | null;
+  phone: string | null;
+  address: string | null;
+  city: string | null;
+  postal_code: string | null;
+  country: string | null;
+  currency: string | null;
+  experience: string | null;
 };
 
 function rowToAdminUser(row: ProfileRow) {
@@ -24,6 +35,14 @@ function rowToAdminUser(row: ProfileRow) {
     balanceUsd: row.balance_usd,
     status: row.status,
     createdAt: row.created_at,
+    dateOfBirth: row.date_of_birth ?? undefined,
+    phone: row.phone ?? undefined,
+    address: row.address ?? undefined,
+    city: row.city ?? undefined,
+    postalCode: row.postal_code ?? undefined,
+    country: row.country ?? undefined,
+    currency: row.currency ?? undefined,
+    experience: row.experience ?? undefined,
   };
 }
 
@@ -37,12 +56,15 @@ export async function GET() {
   }
   const supabase = createAdminClient();
   if (!supabase) {
-    return NextResponse.json({ message: "Admin data access is not configured on this deployment. Set SUPABASE_SERVICE_ROLE_KEY." }, { status: 503 });
+    return NextResponse.json(
+      { message: "Admin data access is not configured on this deployment. Set SUPABASE_SERVICE_ROLE_KEY." },
+      { status: 503 }
+    );
   }
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, first_name, last_name, email, account_type, status, balance_usd, created_at")
+    .select(PROFILE_COLUMNS)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -57,7 +79,10 @@ export async function POST(request: Request) {
   }
   const supabase = createAdminClient();
   if (!supabase) {
-    return NextResponse.json({ message: "Admin data access is not configured on this deployment. Set SUPABASE_SERVICE_ROLE_KEY." }, { status: 503 });
+    return NextResponse.json(
+      { message: "Admin data access is not configured on this deployment. Set SUPABASE_SERVICE_ROLE_KEY." },
+      { status: 503 }
+    );
   }
 
   const body = await request.json().catch(() => null);
@@ -89,7 +114,7 @@ export async function POST(request: Request) {
     .from("profiles")
     .update({ account_type: accountType, balance_usd: initialBalanceUsd })
     .eq("id", created.user.id)
-    .select("id, first_name, last_name, email, account_type, status, balance_usd, created_at")
+    .select(PROFILE_COLUMNS)
     .single();
 
   if (updateError || !profile) {

@@ -1,7 +1,14 @@
 import Link from "next/link";
 import Icon from "@/components/Icon";
 import CandlestickChart from "@/components/CandlestickChart";
+import LiveTicker from "@/components/LiveTicker";
 import { RISK_DISCLAIMER } from "@/lib/data";
+
+const SNAPSHOT_INSTRUMENTS = [
+  { symbol: "EUR/USD", basePrice: 1.0842, decimals: 4 },
+  { symbol: "BTC/USD", basePrice: 64210.5, decimals: 2 },
+  { symbol: "US 500", basePrice: 5308.4, decimals: 2 },
+];
 
 export default function Hero() {
   return (
@@ -60,16 +67,7 @@ export default function Hero() {
             </div>
 
             <div className="mt-6 grid grid-cols-3 gap-3 border-t border-white/[0.07] pt-6">
-              {[
-                { label: "EUR/USD", value: "1.0842" },
-                { label: "BTC/USD", value: "—" },
-                { label: "US 500", value: "—" },
-              ].map((row) => (
-                <div key={row.label}>
-                  <p className="text-[11px] uppercase tracking-wide text-white/35">{row.label}</p>
-                  <p className="mt-1 text-sm font-semibold text-white/80">{row.value}</p>
-                </div>
-              ))}
+              <LiveTicker instruments={SNAPSHOT_INSTRUMENTS} />
             </div>
 
             <div className="mt-6 flex items-center gap-2.5 border-t border-white/[0.07] pt-5">

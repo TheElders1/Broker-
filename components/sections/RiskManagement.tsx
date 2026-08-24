@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Icon from "@/components/Icon";
 import { Section, SectionHeading } from "@/components/Section";
 import { RISK_TOPICS } from "@/lib/data";
@@ -33,9 +34,9 @@ export default function RiskManagement() {
           Trading involves substantial risk of loss and is not suitable for all investors.
           You should carefully consider your objectives, experience level, and risk appetite,
           and seek independent advice if necessary, before trading. Please read our{" "}
-          <a href="/legal/risk-disclosure" className="font-semibold text-gold-300 underline underline-offset-2">
+          <Link href="/legal/risk-disclosure" className="font-semibold text-gold-300 underline underline-offset-2">
             Risk Disclosure
-          </a>{" "}
+          </Link>{" "}
           in full.
         </p>
       </div>

@@ -39,7 +39,7 @@ export default function AuthShell({
       </main>
 
       <footer className="relative z-10 px-6 pb-8 text-center text-xs text-white/35">
-        © 2026 Genesis Pro LTD. All rights reserved.
+        © 2024 Genesis Pro LTD. All rights reserved.
       </footer>
     </div>
   );

@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/siteUrl";
+import { EDUCATION_TOPICS } from "@/lib/data";
 
 const routes = [
   "",
   "/about",
   "/education",
+  ...EDUCATION_TOPICS.map((topic) => `/education/${topic.slug}`),
   "/risk-management",
   "/faq",
   "/contact",

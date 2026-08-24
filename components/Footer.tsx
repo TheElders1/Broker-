@@ -75,7 +75,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs text-white/40 sm:flex-row">
-          <p>© 2026 Genesis Pro LTD. All rights reserved.</p>
+          <p>© 2024 Genesis Pro LTD. All rights reserved.</p>
           <p>Genesis Pro LTD — Financial Brokerage Platform</p>
         </div>
       </div>

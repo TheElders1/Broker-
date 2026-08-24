@@ -144,6 +144,17 @@ export type AdminUser = {
   balanceUsd: number;
   status: "active" | "suspended";
   createdAt: string;
+  // Present for self-registered accounts (the public Open Account form);
+  // undefined for accounts the admin created manually, which don't
+  // collect these. Never includes the password.
+  dateOfBirth?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
+  currency?: string;
+  experience?: string;
 };
 
 export type CreateUserPayload = {

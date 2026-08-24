@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Icon from "@/components/Icon";
 import { Section, SectionHeading } from "@/components/Section";
 import { EDUCATION_TOPICS } from "@/lib/data";
@@ -19,10 +20,13 @@ export default function Education() {
             </span>
             <h3 className="font-display text-lg font-semibold text-white">{topic.title}</h3>
             <p className="text-sm leading-relaxed text-white/55">{topic.description}</p>
-            <span className="mt-auto inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-gold-400/60">
+            <Link
+              href={`/education/${topic.slug}`}
+              className="mt-auto inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-gold-400 transition-colors hover:text-gold-300"
+            >
               Read More
               <Icon name="arrow" className="h-4 w-4" />
-            </span>
+            </Link>
           </div>
         ))}
       </div>

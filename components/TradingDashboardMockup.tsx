@@ -1,17 +1,28 @@
+"use client";
+
 import Icon from "@/components/Icon";
 import CandlestickChart from "@/components/CandlestickChart";
 import DemoBadge from "@/components/DemoBadge";
 import LineSpark from "@/components/LineSpark";
+import { useSimulatedTicker, formatTickerPrice, type TickerInstrument } from "@/lib/useSimulatedTicker";
 
-const WATCHLIST = [
-  { symbol: "EUR/USD", price: "1.0842", change: "+0.24%", up: true },
-  { symbol: "GBP/USD", price: "1.2715", change: "-0.11%", up: false },
-  { symbol: "XAU/USD", price: "2,342.10", change: "+0.62%", up: true },
-  { symbol: "BTC/USD", price: "64,210", change: "+1.35%", up: true },
-  { symbol: "US 500", price: "5,308.4", change: "-0.08%", up: false },
+const WATCHLIST_INSTRUMENTS: TickerInstrument[] = [
+  { symbol: "EUR/USD", basePrice: 1.0842, decimals: 4 },
+  { symbol: "GBP/USD", basePrice: 1.2715, decimals: 4 },
+  { symbol: "XAU/USD", basePrice: 2342.1, decimals: 2 },
+  { symbol: "BTC/USD", basePrice: 64210.5, decimals: 2 },
+  { symbol: "US 500", basePrice: 5308.4, decimals: 2 },
 ];
 
+function formatChangePercent(value: number): string {
+  const sign = value >= 0 ? "+" : "";
+  return `${sign}${value.toFixed(2)}%`;
+}
+
 export default function TradingDashboardMockup({ className = "" }: { className?: string }) {
+  const ticks = useSimulatedTicker(WATCHLIST_INSTRUMENTS);
+  const xauPrice = ticks["XAU/USD"].price;
+
   return (
     <div className={`glass-card relative overflow-hidden p-4 shadow-card sm:p-6 ${className}`}>
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
@@ -34,7 +45,9 @@ export default function TradingDashboardMockup({ className = "" }: { className?:
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs uppercase tracking-wide text-white/40">XAU/USD</p>
-                <p className="font-display text-xl font-semibold text-white">2,342.10</p>
+                <p className="font-display text-xl font-semibold tabular-nums text-white">
+                  {formatTickerPrice(xauPrice, 2)}
+                </p>
               </div>
               <div className="flex gap-2">
                 {["1H", "4H", "1D", "1W"].map((t, i) => (
@@ -67,7 +80,9 @@ export default function TradingDashboardMockup({ className = "" }: { className?:
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl border border-royal-400/25 bg-royal-500/10 p-4">
               <p className="text-xs uppercase tracking-wide text-royal-300">Buy / Long</p>
-              <p className="mt-1 font-display text-lg font-semibold text-white">2,342.35</p>
+              <p className="mt-1 font-display text-lg font-semibold tabular-nums text-white">
+                {formatTickerPrice(xauPrice + 0.25, 2)}
+              </p>
               <button
                 type="button"
                 disabled
@@ -78,7 +93,9 @@ export default function TradingDashboardMockup({ className = "" }: { className?:
             </div>
             <div className="rounded-xl border border-gold-500/25 bg-gold-500/10 p-4">
               <p className="text-xs uppercase tracking-wide text-gold-300">Sell / Short</p>
-              <p className="mt-1 font-display text-lg font-semibold text-white">2,341.85</p>
+              <p className="mt-1 font-display text-lg font-semibold tabular-nums text-white">
+                {formatTickerPrice(xauPrice - 0.25, 2)}
+              </p>
               <button
                 type="button"
                 disabled
@@ -95,17 +112,22 @@ export default function TradingDashboardMockup({ className = "" }: { className?:
           <div className="rounded-xl border border-white/10 bg-ink-900/60 p-4">
             <p className="mb-3 text-xs uppercase tracking-wide text-white/40">Watchlist</p>
             <div className="flex flex-col divide-y divide-white/5">
-              {WATCHLIST.map((row) => (
-                <div key={row.symbol} className="flex items-center justify-between py-2.5">
-                  <span className="text-sm text-white/75">{row.symbol}</span>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-white">{row.price}</p>
-                    <p className={`text-[11px] ${row.up ? "text-emerald-400" : "text-rose-400"}`}>
-                      {row.change}
-                    </p>
+              {WATCHLIST_INSTRUMENTS.map((inst) => {
+                const tick = ticks[inst.symbol];
+                return (
+                  <div key={inst.symbol} className="flex items-center justify-between py-2.5">
+                    <span className="text-sm text-white/75">{inst.symbol}</span>
+                    <div className="text-right">
+                      <p className="text-sm font-medium tabular-nums text-white">
+                        {formatTickerPrice(tick.price, inst.decimals)}
+                      </p>
+                      <p className={`text-[11px] tabular-nums ${tick.up ? "text-emerald-400" : "text-rose-400"}`}>
+                        {formatChangePercent(tick.changePercent)}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

@@ -107,6 +107,7 @@ export type RegistrationPayload = {
   dateOfBirth: string;
   country: string;
   email: string;
+  password: string;
   phone: string;
   address: string;
   city: string;
@@ -116,11 +117,63 @@ export type RegistrationPayload = {
   experience: string;
 };
 
-export async function register(payload: RegistrationPayload): Promise<AuthSession> {
-  if (IS_DEMO_MODE) {
-    return mockDelay({ user: { ...MOCK_USER, firstName: payload.firstName, lastName: payload.lastName, email: payload.email } }, 900);
+/**
+ * `signedIn: true` means signUp returned an active session — the account
+ * is immediately usable, no separate login step needed. `false` means the
+ * Supabase project still has "Confirm email" turned on (Authentication >
+ * Sign In / Providers > Email in the dashboard) and is withholding a
+ * session until the emailed link is clicked; that toggle can't be
+ * controlled from application code.
+ */
+export async function register(payload: RegistrationPayload): Promise<AuthSession & { signedIn: boolean }> {
+  if (IS_SUPABASE_CONFIGURED) {
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.signUp({
+      email: payload.email,
+      password: payload.password,
+      options: {
+        data: {
+          first_name: payload.firstName,
+          last_name: payload.lastName,
+          date_of_birth: payload.dateOfBirth,
+          phone: payload.phone,
+          address: payload.address,
+          city: payload.city,
+          postal_code: payload.postalCode,
+          country: payload.country,
+          account_type: payload.accountType,
+          currency: payload.currency,
+          experience: payload.experience,
+        },
+      },
+    });
+    if (error || !data.user) {
+      throw new ApiError(error?.message ?? "Could not create your account.", 400);
+    }
+    return {
+      user: {
+        id: data.user.id,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        email: payload.email,
+        accountType: payload.accountType as User["accountType"],
+        kycStatus: "not_started",
+        createdAt: data.user.created_at,
+      },
+      signedIn: Boolean(data.session),
+    };
   }
-  return apiFetch<AuthSession>("/auth/register", { method: "POST", body: payload });
+  if (IS_DEMO_MODE) {
+    return mockDelay(
+      {
+        user: { ...MOCK_USER, firstName: payload.firstName, lastName: payload.lastName, email: payload.email },
+        signedIn: true,
+      },
+      900
+    );
+  }
+  const session = await apiFetch<AuthSession>("/auth/register", { method: "POST", body: payload });
+  return { ...session, signedIn: true };
 }
 
 export async function requestPasswordReset(email: string): Promise<void> {

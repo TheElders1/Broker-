@@ -18,6 +18,7 @@ export default function AdminUsersView() {
   const users = useApiResource(listUsers, []);
   const [editing, setEditing] = useState<AdminUser | null>(null);
   const [deleting, setDeleting] = useState<AdminUser | null>(null);
+  const [viewing, setViewing] = useState<AdminUser | null>(null);
 
   return (
     <div>
@@ -73,6 +74,13 @@ export default function AdminUsersView() {
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"
+                          onClick={() => setViewing(u)}
+                          className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-white/70 transition-colors hover:border-white/25 hover:text-white"
+                        >
+                          View Details
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => setEditing(u)}
                           className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-white/70 transition-colors hover:border-gold-400/40 hover:text-gold-300"
                         >
@@ -95,6 +103,8 @@ export default function AdminUsersView() {
         )}
       </Widget>
 
+      {viewing ? <UserDetailsDialog user={viewing} onClose={() => setViewing(null)} /> : null}
+
       {editing ? (
         <EditBalanceDialog
           user={editing}
@@ -116,6 +126,54 @@ export default function AdminUsersView() {
           }}
         />
       ) : null}
+    </div>
+  );
+}
+
+function UserDetailsDialog({ user, onClose }: { user: AdminUser; onClose: () => void }) {
+  const rows: { label: string; value: string }[] = [
+    { label: "Date of Birth", value: user.dateOfBirth ?? "—" },
+    { label: "Phone", value: user.phone ?? "—" },
+    { label: "Address", value: user.address ?? "—" },
+    { label: "City", value: user.city ?? "—" },
+    { label: "Postal Code", value: user.postalCode ?? "—" },
+    { label: "Country", value: user.country ?? "—" },
+    { label: "Base Currency", value: user.currency ?? "—" },
+    { label: "Trading Experience", value: user.experience ?? "—" },
+  ];
+  const hasDetails = rows.some((r) => r.value !== "—");
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-ink-950/80 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+      <div className="relative w-full max-w-lg rounded-xl2 border border-white/10 bg-ink-900 p-6 shadow-2xl">
+        <h3 className="font-display text-lg font-semibold text-white">
+          {user.firstName} {user.lastName}
+        </h3>
+        <p className="mt-1 text-sm text-white/50">{user.email}</p>
+
+        {hasDetails ? (
+          <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {rows.map((r) => (
+              <div key={r.label}>
+                <p className="text-[11px] uppercase tracking-wide text-white/40">{r.label}</p>
+                <p className="mt-0.5 text-sm text-white/85">{r.value}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-5 text-sm text-white/45">
+            No additional details on file — this account was created directly by an admin, which
+            doesn&apos;t collect these fields.
+          </p>
+        )}
+
+        <div className="mt-6 flex justify-end border-t border-white/10 pt-6">
+          <button type="button" onClick={onClose} className="btn-outline">
+            Close
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
