@@ -2,14 +2,26 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import Icon from "@/components/Icon";
 import { ADMIN_NAV } from "@/lib/adminNav";
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } finally {
+      router.push("/admin/login");
+      router.refresh();
+    }
+  }
 
   const navList = (
     <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4" aria-label="Admin">
@@ -29,13 +41,15 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           </Link>
         );
       })}
-      <Link
-        href="/"
-        className="mt-4 flex items-center gap-3 rounded-lg border-t border-white/10 px-3.5 pt-5 text-sm font-medium text-white/50 transition-colors hover:text-rose-300"
+      <button
+        type="button"
+        onClick={handleLogout}
+        disabled={loggingOut}
+        className="mt-4 flex items-center gap-3 rounded-lg border-t border-white/10 px-3.5 pt-5 text-sm font-medium text-white/50 transition-colors hover:text-rose-300 disabled:opacity-50"
       >
         <Icon name="close" className="h-[18px] w-[18px]" />
-        Exit Admin
-      </Link>
+        {loggingOut ? "Signing out..." : "Log Out"}
+      </button>
     </nav>
   );
 
@@ -91,18 +105,19 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             </div>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-400/40 bg-rose-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-rose-300">
               <span className="h-1.5 w-1.5 rounded-full bg-rose-300 animate-pulse-soft" />
-              Demo — Not Access Controlled
+              Demo — Shared Password Only
             </span>
           </header>
 
           <div className="flex items-start gap-2.5 border-b border-rose-500/20 bg-rose-500/[0.04] px-5 py-3 sm:px-8">
             <Icon name="shield" className="mt-0.5 h-4 w-4 shrink-0 text-rose-200/80" />
             <p className="text-xs leading-relaxed text-rose-200/80">
-              This admin area has no real authentication yet — anyone with the URL can reach it in
-              this demo. Every action here only edits in-memory demo data for this browser
-              session. Before going live, this route and every{" "}
-              <code className="text-rose-200">/admin/*</code> API call must be gated by real admin
-              login and role checks on the backend.
+              This route is gated by a single shared username/password (server-verified, httpOnly
+              session cookie) — not real per-admin authentication with roles or an audit trail.
+              Every action here also only edits in-memory demo data for this browser session, and
+              resets on reload. Before going live, add real admin accounts on the backend and gate
+              every <code className="text-rose-200">/admin/*</code> API call by an admin role, not
+              just a valid session.
             </p>
           </div>
 
