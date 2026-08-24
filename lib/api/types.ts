@@ -1,0 +1,131 @@
+// Shared API domain types. These describe the contract the frontend
+// expects from the backend — the backend developer can treat this file
+// as the source of truth for response shapes.
+
+export type BitcoinTxStatus =
+  | "pending"
+  | "confirming"
+  | "confirmed"
+  | "completed"
+  | "failed"
+  | "cancelled";
+
+export type User = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  accountType: "Basic" | "Professional" | "Premium";
+  kycStatus: "not_started" | "pending" | "verified" | "rejected";
+  createdAt: string;
+};
+
+export type AuthSession = {
+  user: User;
+};
+
+export type MarketInstrument = {
+  symbol: string;
+  category: "Forex" | "Commodities" | "Indices" | "Stocks" | "Cryptocurrencies";
+  price: number;
+  changePercent: number;
+};
+
+export type Position = {
+  id: string;
+  symbol: string;
+  side: "Buy" | "Sell";
+  size: number;
+  entryPrice: number;
+  currentPrice: number;
+  pl: number;
+};
+
+export type PortfolioSummary = {
+  balance: number;
+  availableFunds: number;
+  unrealizedPl: number;
+  todayPl: number;
+  todayPlPercent: number;
+  equityCurve: number[];
+};
+
+export type WalletAssetBalance = {
+  asset: "BTC" | "USD" | string;
+  total: number;
+  available: number;
+  pending: number;
+};
+
+export type WalletSummary = {
+  totalBalanceUsd: number;
+  availableBalanceUsd: number;
+  pendingBalanceUsd: number;
+  assets: WalletAssetBalance[];
+};
+
+export type BitcoinDepositAddress = {
+  address: string;
+  network: "Bitcoin";
+  assignedAt: string;
+};
+
+export type BitcoinDeposit = {
+  id: string;
+  amountBtc: number;
+  status: BitcoinTxStatus;
+  confirmations: number;
+  confirmationsRequired: number;
+  txId: string | null;
+  createdAt: string;
+};
+
+export type BitcoinWithdrawalRequest = {
+  destinationAddress: string;
+  amountBtc: number;
+};
+
+export type BitcoinWithdrawal = {
+  id: string;
+  destinationAddress: string;
+  amountBtc: number;
+  networkFeeBtc: number;
+  status: BitcoinTxStatus;
+  txId: string | null;
+  createdAt: string;
+};
+
+export type Transaction = {
+  id: string;
+  type: "Deposit" | "Withdrawal" | "Trade Settlement" | "Transfer";
+  asset: string;
+  amount: number;
+  status: BitcoinTxStatus | "settled";
+  txId: string | null;
+  date: string;
+};
+
+export type KycStatusResponse = {
+  status: User["kycStatus"];
+  submittedDocuments: { type: string; status: string; uploadedAt: string }[];
+};
+
+export type NotificationItem = {
+  id: string;
+  title: string;
+  body: string;
+  read: boolean;
+  createdAt: string;
+};
+
+export type SupportTicket = {
+  id: string;
+  subject: string;
+  status: "open" | "pending" | "resolved";
+  createdAt: string;
+};
+
+export type PaginatedResult<T> = {
+  items: T[];
+  total: number;
+};
