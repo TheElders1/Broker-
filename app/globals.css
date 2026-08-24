@@ -38,10 +38,17 @@ body {
   }
 }
 
+/* Visible by default — Reveal.tsx only ever adds .reveal-pending to
+   elements it has confirmed are below the fold, so content can never be
+   stuck invisible if JS is slow, blocked, or an observer misses a
+   callback (see components/Reveal.tsx for the full explanation). */
 .reveal {
+  opacity: 1;
+}
+.reveal.reveal-pending {
   opacity: 0;
 }
-.reveal.in-view {
+.reveal.reveal-pending.in-view {
   animation: reveal-fade-up 0.7s ease-out forwards;
 }
 
