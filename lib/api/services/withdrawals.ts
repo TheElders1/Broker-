@@ -1,12 +1,12 @@
-import { listWithdrawals, requestWithdrawal } from "./bitcoin";
-
 /**
- * General withdrawals entry point. Bitcoin is the currently supported
- * withdrawal method; this module re-exports the Bitcoin-specific service
- * so additional withdrawal rails can be added later without changing
- * call sites.
+ * General withdrawals entry point. Bitcoin and USDT are the currently
+ * supported withdrawal methods; this module re-exports both services
+ * under one namespace so additional withdrawal rails can be added later
+ * without changing call sites.
  *
- * Backend contract: see lib/api/services/bitcoin.ts
+ * Backend contract: see lib/api/services/bitcoin.ts and
+ * lib/api/services/usdt.ts
  */
 
-export { listWithdrawals, requestWithdrawal };
+export * as bitcoin from "./bitcoin";
+export * as usdt from "./usdt";

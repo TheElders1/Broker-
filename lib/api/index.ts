@@ -6,6 +6,7 @@ export * as portfolioApi from "./services/portfolio";
 export * as tradingApi from "./services/trading";
 export * as walletApi from "./services/wallet";
 export * as bitcoinApi from "./services/bitcoin";
+export * as usdtApi from "./services/usdt";
 export * as depositsApi from "./services/deposits";
 export * as withdrawalsApi from "./services/withdrawals";
 export * as transactionsApi from "./services/transactions";

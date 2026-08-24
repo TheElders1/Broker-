@@ -9,7 +9,7 @@ export default function WithdrawalsPage() {
     <div>
       <PageHeader
         title="Withdrawals"
-        description="Request a Bitcoin withdrawal. Requests are validated and processed by the backend."
+        description="Request a Bitcoin or USDT withdrawal. Requests are validated and processed by the backend."
       />
       <WithdrawalsView />
     </div>

@@ -1,17 +1,26 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 /**
  * Progressive-enhancement scroll reveal. Content is visible by default
  * (see .reveal in globals.css) — this only ever *adds* a temporary hidden
- * state to elements that are confirmed below the fold at mount, then
- * reveals them via IntersectionObserver. If the observer is unsupported,
- * never fires for some element (seen on some mobile browsers on very
- * tall pages), or JS is slow/blocked, a timeout fallback forces every
- * pending element visible — content can never get stuck invisible.
+ * state to elements that are confirmed below the fold, then reveals them
+ * via IntersectionObserver. If the observer is unsupported, never fires
+ * for some element (seen on some mobile browsers on very tall pages), or
+ * JS is slow/blocked, a timeout fallback forces every pending element
+ * visible — content can never get stuck invisible.
+ *
+ * This component lives in the root layout, which persists across
+ * client-side navigations (App Router only swaps the page content below
+ * it). Re-running the setup on every pathname change is what makes the
+ * reveal animation work on pages you navigate to client-side, not just
+ * the very first page load.
  */
 export default function Reveal() {
+  const pathname = usePathname();
+
   useEffect(() => {
     const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
     if (els.length === 0) return;
@@ -58,7 +67,7 @@ export default function Reveal() {
       observer.disconnect();
       window.clearTimeout(fallback);
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

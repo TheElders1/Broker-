@@ -86,9 +86,10 @@ lib/api/
     portfolio.ts     balance, positions
     trading.ts       place/close orders
     wallet.ts        balances, transfers
-    bitcoin.ts       deposit address, deposits, withdrawals
-    deposits.ts      re-exports bitcoin deposit functions
-    withdrawals.ts   re-exports bitcoin withdrawal functions
+    bitcoin.ts       BTC deposit address, deposits, withdrawals
+    usdt.ts          USDT (TRC20/ERC20/BEP20) deposit address, deposits, withdrawals
+    deposits.ts      re-exports bitcoin + usdt deposit functions
+    withdrawals.ts   re-exports bitcoin + usdt withdrawal functions
     transactions.ts  transaction history
     kyc.ts           verification status, document upload
     notifications.ts in-app notifications
@@ -137,8 +138,9 @@ The short version of what you need back from him:
    frontend never stores a token in localStorage.
 4. CORS configured to allow this site's deployed origin, with
    `credentials: true`.
-5. Confirmation of how Bitcoin deposit confirmations/status updates reach the
-   frontend (polling the existing `GET` endpoints is enough to start).
+5. Confirmation of how Bitcoin/USDT deposit confirmations and status updates
+   reach the frontend (polling the existing `GET` endpoints is enough to
+   start), and which USDT network(s) — TRC20, ERC20, BEP20 — you'll support.
 
 Once you have that, set `NEXT_PUBLIC_API_BASE_URL` and
 `NEXT_PUBLIC_APP_MODE=production` in Render's environment variables and

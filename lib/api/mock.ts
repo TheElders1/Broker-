@@ -17,6 +17,9 @@ import type {
   Position,
   SupportTicket,
   Transaction,
+  UsdtDeposit,
+  UsdtDepositAddress,
+  UsdtWithdrawal,
   User,
   WalletSummary,
 } from "./types";
@@ -59,6 +62,7 @@ export const MOCK_WALLET: WalletSummary = {
   pendingBalanceUsd: 0,
   assets: [
     { asset: "BTC", total: 0, available: 0, pending: 0 },
+    { asset: "USDT", total: 0, available: 0, pending: 0 },
     { asset: "USD", total: 0, available: 0, pending: 0 },
   ],
 };
@@ -72,6 +76,16 @@ export const MOCK_DEPOSIT_ADDRESS: BitcoinDepositAddress = {
 export const MOCK_BITCOIN_DEPOSITS: BitcoinDeposit[] = [];
 
 export const MOCK_BITCOIN_WITHDRAWALS: BitcoinWithdrawal[] = [];
+
+export const MOCK_USDT_DEPOSIT_ADDRESS: UsdtDepositAddress = {
+  address: "T-demo-usdt-address-not-real-0000000000",
+  network: "TRC20",
+  assignedAt: "2026-01-01T00:00:00Z",
+};
+
+export const MOCK_USDT_DEPOSITS: UsdtDeposit[] = [];
+
+export const MOCK_USDT_WITHDRAWALS: UsdtWithdrawal[] = [];
 
 export const MOCK_TRANSACTIONS: Transaction[] = [];
 

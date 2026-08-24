@@ -6,26 +6,36 @@ import BitcoinStatusBadge from "@/components/BitcoinStatusBadge";
 import { Widget, EmptyState } from "@/components/dashboard/DashboardWidgets";
 import { LoadingBlock, ErrorBlock } from "@/components/dashboard/ResourceState";
 import { useApiResource } from "@/lib/useApiResource";
-import { listWithdrawals, requestWithdrawal } from "@/lib/api/services/withdrawals";
+import { listWithdrawals as listBtcWithdrawals, requestWithdrawal as requestBtcWithdrawal } from "@/lib/api/services/bitcoin";
+import { listWithdrawals as listUsdtWithdrawals, requestWithdrawal as requestUsdtWithdrawal } from "@/lib/api/services/usdt";
 import { ApiError } from "@/lib/api/client";
-import type { BitcoinWithdrawal } from "@/lib/api/types";
+import type { BitcoinWithdrawal, UsdtNetwork, UsdtWithdrawal } from "@/lib/api/types";
 
+type Asset = "BTC" | "USDT";
 type Step = "form" | "confirm" | "result";
+type Result = BitcoinWithdrawal | UsdtWithdrawal;
+
+const USDT_NETWORKS: UsdtNetwork[] = ["TRC20", "ERC20", "BEP20"];
 
 export default function WithdrawalsView() {
-  const withdrawals = useApiResource(listWithdrawals, []);
+  const [asset, setAsset] = useState<Asset>("BTC");
+  const [network, setNetwork] = useState<UsdtNetwork>("TRC20");
+  const btcWithdrawals = useApiResource(listBtcWithdrawals, []);
+  const usdtWithdrawals = useApiResource(listUsdtWithdrawals, []);
+  const withdrawals = asset === "BTC" ? btcWithdrawals : usdtWithdrawals;
+
   const [step, setStep] = useState<Step>("form");
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<BitcoinWithdrawal | null>(null);
+  const [result, setResult] = useState<Result | null>(null);
 
   function validateAndConfirm(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     if (!address.trim()) {
-      setError("Enter a destination Bitcoin address.");
+      setError(`Enter a destination ${asset === "BTC" ? "Bitcoin" : "USDT"} address.`);
       return;
     }
     if (!amount || Number(amount) <= 0) {
@@ -39,10 +49,10 @@ export default function WithdrawalsView() {
     setSubmitting(true);
     setError(null);
     try {
-      const withdrawal = await requestWithdrawal({
-        destinationAddress: address,
-        amountBtc: Number(amount),
-      });
+      const withdrawal =
+        asset === "BTC"
+          ? await requestBtcWithdrawal({ destinationAddress: address, amountBtc: Number(amount) })
+          : await requestUsdtWithdrawal({ destinationAddress: address, amountUsdt: Number(amount), network });
       setResult(withdrawal);
       setStep("result");
       withdrawals.reload();
@@ -62,125 +72,172 @@ export default function WithdrawalsView() {
     setError(null);
   }
 
+  function switchAsset(next: Asset) {
+    setAsset(next);
+    startOver();
+  }
+
   return (
-    <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_1.4fr]">
-      <Widget title="Withdraw Bitcoin">
-        {error ? (
-          <div className="mb-4 flex items-start gap-2.5 rounded-lg border border-rose-500/30 bg-rose-500/10 p-3.5 text-sm text-rose-300">
-            <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0" />
-            <p>{error}</p>
-          </div>
-        ) : null}
+    <div>
+      <div className="mb-6 inline-flex rounded-full border border-white/10 bg-white/[0.02] p-1">
+        {(["BTC", "USDT"] as Asset[]).map((a) => (
+          <button
+            key={a}
+            type="button"
+            onClick={() => switchAsset(a)}
+            className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
+              asset === a ? "bg-gold-gradient text-ink-950" : "text-white/60 hover:text-white"
+            }`}
+          >
+            {a === "BTC" ? "Bitcoin" : "USDT"}
+          </button>
+        ))}
+      </div>
 
-        {step === "form" ? (
-          <form onSubmit={validateAndConfirm} className="flex flex-col gap-4">
-            <div>
-              <label htmlFor="destination" className="label-field">
-                Destination Bitcoin Address
-              </label>
-              <input
-                id="destination"
-                className="input-field font-mono text-xs"
-                placeholder="bc1q..."
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-              />
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_1.4fr]">
+        <Widget title={`Withdraw ${asset === "BTC" ? "Bitcoin" : "USDT"}`}>
+          {error ? (
+            <div className="mb-4 flex items-start gap-2.5 rounded-lg border border-rose-500/30 bg-rose-500/10 p-3.5 text-sm text-rose-300">
+              <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0" />
+              <p>{error}</p>
             </div>
-            <div>
-              <label htmlFor="wdAmount" className="label-field">
-                Amount (BTC)
-              </label>
-              <input
-                id="wdAmount"
-                type="number"
-                min="0"
-                step="0.00000001"
-                className="input-field"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </div>
-            <div className="rounded-lg border border-white/10 bg-white/[0.02] p-3.5 text-xs text-white/45">
-              Network fee will be calculated and confirmed by the backend before broadcast.
-            </div>
-            <button type="submit" className="btn-gold w-full">
-              Review Withdrawal
-            </button>
-          </form>
-        ) : step === "confirm" ? (
-          <div className="flex flex-col gap-4">
-            <p className="text-sm text-white/60">Please confirm the details below before submitting.</p>
-            <div className="flex flex-col gap-3 rounded-xl border border-white/10 bg-ink-900/60 p-4 text-sm">
-              <Row label="Destination" value={address} mono />
-              <Row label="Amount" value={`${amount} BTC`} />
-              <Row label="Network Fee" value="Confirmed by backend" />
-            </div>
-            <div className="flex gap-3">
-              <button type="button" onClick={() => setStep("form")} className="btn-outline flex-1">
-                Back
-              </button>
-              <button type="button" onClick={handleConfirm} disabled={submitting} className="btn-gold flex-1">
-                {submitting ? "Submitting..." : "Confirm Withdrawal"}
-              </button>
-            </div>
-          </div>
-        ) : result ? (
-          <div className="flex flex-col items-center gap-4 text-center">
-            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-gold-gradient text-ink-950">
-              <Icon name="check" className="h-7 w-7" />
-            </span>
-            <h3 className="font-display text-lg font-semibold text-white">Withdrawal Requested</h3>
-            <BitcoinStatusBadge status={result.status} />
-            <div className="w-full rounded-lg border border-white/10 bg-ink-900/60 p-4 text-left text-xs">
-              <Row label="Amount" value={`${result.amountBtc} BTC`} />
-              <Row label="Destination" value={result.destinationAddress} mono />
-              <Row label="Transaction ID" value={result.txId ?? "Pending assignment"} mono />
-            </div>
-            <button type="button" onClick={startOver} className="btn-outline">
-              New Withdrawal
-            </button>
-          </div>
-        ) : null}
-      </Widget>
+          ) : null}
 
-      <Widget title="Withdrawal History">
-        {withdrawals.status === "loading" ? (
-          <LoadingBlock />
-        ) : withdrawals.status === "error" ? (
-          <ErrorBlock message={withdrawals.error} onRetry={withdrawals.reload} />
-        ) : withdrawals.data.length === 0 ? (
-          <EmptyState
-            icon="lock"
-            title="No withdrawals yet"
-            description="Withdrawal requests you submit will appear here with live status."
-          />
-        ) : (
-          <div className="flex flex-col gap-4">
-            {withdrawals.data.map((w) => (
-              <div key={w.id} className="rounded-xl border border-white/10 bg-ink-900/60 p-4">
-                <div className="flex items-center justify-between">
-                  <p className="font-display text-base font-semibold text-white">{w.amountBtc} BTC</p>
-                  <BitcoinStatusBadge status={w.status} />
+          {step === "form" ? (
+            <form onSubmit={validateAndConfirm} className="flex flex-col gap-4">
+              {asset === "USDT" ? (
+                <div>
+                  <label htmlFor="wdNetwork" className="label-field">
+                    Network
+                  </label>
+                  <select
+                    id="wdNetwork"
+                    className="input-field"
+                    value={network}
+                    onChange={(e) => setNetwork(e.target.value as UsdtNetwork)}
+                  >
+                    {USDT_NETWORKS.map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div className="mt-3 grid grid-cols-1 gap-2 text-xs text-white/50 sm:grid-cols-2">
-                  <div>
-                    <p className="text-white/35">Destination</p>
-                    <p className="break-all font-mono text-white/75">{w.destinationAddress}</p>
-                  </div>
-                  <div>
-                    <p className="text-white/35">Date</p>
-                    <p className="text-white/75">{new Date(w.createdAt).toLocaleString()}</p>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <p className="text-white/35">Transaction ID</p>
-                    <p className="break-all font-mono text-white/75">{w.txId ?? "Pending assignment"}</p>
-                  </div>
-                </div>
+              ) : null}
+              <div>
+                <label htmlFor="destination" className="label-field">
+                  Destination {asset === "BTC" ? "Bitcoin" : "USDT"} Address
+                </label>
+                <input
+                  id="destination"
+                  className="input-field font-mono text-xs"
+                  placeholder={asset === "BTC" ? "bc1q..." : "T... / 0x..."}
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                />
               </div>
-            ))}
-          </div>
-        )}
-      </Widget>
+              <div>
+                <label htmlFor="wdAmount" className="label-field">
+                  Amount ({asset})
+                </label>
+                <input
+                  id="wdAmount"
+                  type="number"
+                  min="0"
+                  step={asset === "BTC" ? "0.00000001" : "0.01"}
+                  className="input-field"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.02] p-3.5 text-xs text-white/45">
+                Network fee will be calculated and confirmed by the backend before broadcast.
+              </div>
+              <button type="submit" className="btn-gold w-full">
+                Review Withdrawal
+              </button>
+            </form>
+          ) : step === "confirm" ? (
+            <div className="flex flex-col gap-4">
+              <p className="text-sm text-white/60">Please confirm the details below before submitting.</p>
+              <div className="flex flex-col gap-3 rounded-xl border border-white/10 bg-ink-900/60 p-4 text-sm">
+                <Row label="Destination" value={address} mono />
+                <Row label="Amount" value={`${amount} ${asset}`} />
+                {asset === "USDT" ? <Row label="Network" value={network} /> : null}
+                <Row label="Network Fee" value="Confirmed by backend" />
+              </div>
+              <div className="flex gap-3">
+                <button type="button" onClick={() => setStep("form")} className="btn-outline flex-1">
+                  Back
+                </button>
+                <button type="button" onClick={handleConfirm} disabled={submitting} className="btn-gold flex-1">
+                  {submitting ? "Submitting..." : "Confirm Withdrawal"}
+                </button>
+              </div>
+            </div>
+          ) : result ? (
+            <div className="flex flex-col items-center gap-4 text-center">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-gold-gradient text-ink-950">
+                <Icon name="check" className="h-7 w-7" />
+              </span>
+              <h3 className="font-display text-lg font-semibold text-white">Withdrawal Requested</h3>
+              <BitcoinStatusBadge status={result.status} />
+              <div className="w-full rounded-lg border border-white/10 bg-ink-900/60 p-4 text-left text-xs">
+                <Row
+                  label="Amount"
+                  value={"amountBtc" in result ? `${result.amountBtc} BTC` : `${result.amountUsdt} USDT`}
+                />
+                <Row label="Destination" value={result.destinationAddress} mono />
+                <Row label="Transaction ID" value={result.txId ?? "Pending assignment"} mono />
+              </div>
+              <button type="button" onClick={startOver} className="btn-outline">
+                New Withdrawal
+              </button>
+            </div>
+          ) : null}
+        </Widget>
+
+        <Widget title="Withdrawal History">
+          {withdrawals.status === "loading" ? (
+            <LoadingBlock />
+          ) : withdrawals.status === "error" ? (
+            <ErrorBlock message={withdrawals.error} onRetry={withdrawals.reload} />
+          ) : withdrawals.data.length === 0 ? (
+            <EmptyState
+              icon="lock"
+              title="No withdrawals yet"
+              description="Withdrawal requests you submit will appear here with live status."
+            />
+          ) : (
+            <div className="flex flex-col gap-4">
+              {withdrawals.data.map((w) => (
+                <div key={w.id} className="rounded-xl border border-white/10 bg-ink-900/60 p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="font-display text-base font-semibold text-white">
+                      {"amountBtc" in w ? `${w.amountBtc} BTC` : `${w.amountUsdt} USDT`}
+                    </p>
+                    <BitcoinStatusBadge status={w.status} />
+                  </div>
+                  <div className="mt-3 grid grid-cols-1 gap-2 text-xs text-white/50 sm:grid-cols-2">
+                    <div>
+                      <p className="text-white/35">Destination</p>
+                      <p className="break-all font-mono text-white/75">{w.destinationAddress}</p>
+                    </div>
+                    <div>
+                      <p className="text-white/35">Date</p>
+                      <p className="text-white/75">{new Date(w.createdAt).toLocaleString()}</p>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <p className="text-white/35">Transaction ID</p>
+                      <p className="break-all font-mono text-white/75">{w.txId ?? "Pending assignment"}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Widget>
+      </div>
     </div>
   );
 }

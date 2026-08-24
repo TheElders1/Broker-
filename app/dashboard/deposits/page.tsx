@@ -9,7 +9,7 @@ export default function DepositsPage() {
     <div>
       <PageHeader
         title="Deposits"
-        description="Fund your account via Bitcoin. Address and status are provided by the backend once connected."
+        description="Fund your account via Bitcoin or USDT. Address and status are provided by the backend once connected."
       />
       <DepositsView />
     </div>

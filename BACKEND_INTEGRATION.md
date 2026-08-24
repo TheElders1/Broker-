@@ -138,6 +138,24 @@ endpoints above sufficient to start, or will there be a websocket/webhook
 later? Polling is fine for launch; it's worth confirming so nobody builds a
 websocket layer that isn't needed yet.
 
+### USDT — `lib/api/services/usdt.ts` (used by both the Deposits and Withdrawals pages)
+
+| Method | Path | Body | Returns |
+| --- | --- | --- | --- |
+| GET | `/usdt/deposit-address?network=TRC20\|ERC20\|BEP20` | — | `{ address, network, assignedAt }` |
+| GET | `/usdt/deposits` | — | `UsdtDeposit[]` — `{ id, amountUsdt, network, status, confirmations, confirmationsRequired, txId, createdAt }` |
+| GET | `/usdt/withdrawals` | — | `UsdtWithdrawal[]` — `{ id, destinationAddress, amountUsdt, network, networkFeeUsdt, status, txId, createdAt }` |
+| POST | `/usdt/withdrawals` | `{ destinationAddress, amountUsdt, network }` | `UsdtWithdrawal` |
+
+USDT is multi-chain — the same `status` values as Bitcoin apply, but every
+deposit address and withdrawal is tied to a specific network (`TRC20`,
+`ERC20`, or `BEP20`). The frontend lets the client pick a network before
+requesting a deposit address or submitting a withdrawal; the backend should
+reject a withdrawal whose destination address doesn't look valid for the
+selected network. If you're only supporting one network at launch (TRC20 is
+the cheapest/most common for USDT), that's fine — just confirm which one so
+the frontend can default to it.
+
 ### Transactions — `lib/api/services/transactions.ts`
 
 | Method | Path | Returns |
@@ -178,8 +196,9 @@ backend developer:
 1. **Auth** (`/auth/login`, `/auth/session`, `/auth/register`) — nothing
    else matters until sessions work.
 2. **Users / Accounts** — basic profile.
-3. **Wallet + Bitcoin** — this is the core "why we're doing this" feature:
-   deposit address, deposit status, withdrawal request + status.
+3. **Wallet + Bitcoin + USDT** — this is the core "why we're doing this"
+   feature: deposit address, deposit status, withdrawal request + status,
+   for both assets.
 4. **Portfolio / Transactions** — history and balances.
 5. **Markets / Trading** — can stay on demo data the longest, since it
    needs a licensed market-data feed and execution engine, which is a

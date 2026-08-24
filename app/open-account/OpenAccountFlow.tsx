@@ -5,6 +5,28 @@ import Link from "next/link";
 import Icon from "@/components/Icon";
 import { register } from "@/lib/api/services/auth";
 import { ApiError } from "@/lib/api/client";
+import { COUNTRIES } from "@/lib/countries";
+
+const MIN_AGE = 18;
+
+function calculateAge(dob: string): number | null {
+  if (!dob) return null;
+  const birthDate = new Date(dob);
+  if (Number.isNaN(birthDate.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const hasHadBirthdayThisYear =
+    today.getMonth() > birthDate.getMonth() ||
+    (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+  if (!hasHadBirthdayThisYear) age -= 1;
+  return age;
+}
+
+function maxDobForMinAge(): string {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - MIN_AGE);
+  return d.toISOString().slice(0, 10);
+}
 
 type FormData = {
   firstName: string;
@@ -69,7 +91,16 @@ export default function OpenAccountFlow() {
     if (step === 0) {
       if (!data.firstName.trim()) e.firstName = "First name is required.";
       if (!data.lastName.trim()) e.lastName = "Last name is required.";
-      if (!data.dob) e.dob = "Date of birth is required.";
+      if (!data.dob) {
+        e.dob = "Date of birth is required.";
+      } else {
+        const age = calculateAge(data.dob);
+        if (age === null) {
+          e.dob = "Enter a valid date of birth.";
+        } else if (age < MIN_AGE) {
+          e.dob = `You must be at least ${MIN_AGE} years old to open an account.`;
+        }
+      }
       if (!data.country.trim()) e.country = "Country of residence is required.";
     }
     if (step === 1) {
@@ -279,17 +310,25 @@ function StepPersonal({
           type="date"
           className="input-field"
           value={data.dob}
+          max={maxDobForMinAge()}
           onChange={(e) => update("dob", e.target.value)}
         />
+        <p className="mt-1.5 text-xs text-white/35">You must be at least {MIN_AGE} to open an account.</p>
       </Field>
       <Field id="country" label="Country of Residence" error={errors.country}>
-        <input
+        <select
           id="country"
           className="input-field"
-          placeholder="e.g. United Kingdom"
           value={data.country}
           onChange={(e) => update("country", e.target.value)}
-        />
+        >
+          <option value="">Select your country</option>
+          {COUNTRIES.map((c) => (
+            <option key={c.code} value={c.name}>
+              {c.name}
+            </option>
+          ))}
+        </select>
       </Field>
     </div>
   );

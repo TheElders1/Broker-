@@ -1,12 +1,12 @@
-import { getDepositAddress, listDeposits } from "./bitcoin";
-
 /**
- * General deposits entry point. Bitcoin is the currently supported
- * deposit method; this module re-exports the Bitcoin-specific service so
- * additional deposit rails (e.g. bank transfer) can be added here later
- * without changing call sites.
+ * General deposits entry point. Bitcoin and USDT are the currently
+ * supported deposit methods; this module re-exports both services under
+ * one namespace so additional deposit rails (e.g. bank transfer) can be
+ * added here later without changing call sites.
  *
- * Backend contract: see lib/api/services/bitcoin.ts
+ * Backend contract: see lib/api/services/bitcoin.ts and
+ * lib/api/services/usdt.ts
  */
 
-export { getDepositAddress, listDeposits };
+export * as bitcoin from "./bitcoin";
+export * as usdt from "./usdt";

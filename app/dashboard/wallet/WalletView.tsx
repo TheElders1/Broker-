@@ -67,7 +67,7 @@ export default function WalletView() {
                   <div className="flex items-center justify-between">
                     <span className="font-display text-lg font-semibold text-white">{asset.asset}</span>
                     <span className="rounded-full bg-white/5 px-2.5 py-1 text-[11px] text-white/45">
-                      {asset.asset === "BTC" ? "Bitcoin" : "Fiat"}
+                      {asset.asset === "BTC" ? "Bitcoin" : asset.asset === "USDT" ? "Stablecoin" : "Fiat"}
                     </span>
                   </div>
                   <p className="mt-3 text-sm text-white/50">Total</p>
@@ -179,6 +179,7 @@ function TransferForm({ onDone }: { onDone: () => void }) {
           </label>
           <select id="fromAsset" className="input-field" value={fromAsset} onChange={(e) => setFromAsset(e.target.value)}>
             <option>BTC</option>
+            <option>USDT</option>
             <option>USD</option>
           </select>
         </div>
@@ -188,6 +189,7 @@ function TransferForm({ onDone }: { onDone: () => void }) {
           </label>
           <select id="toAsset" className="input-field" value={toAsset} onChange={(e) => setToAsset(e.target.value)}>
             <option>USD</option>
+            <option>USDT</option>
             <option>BTC</option>
           </select>
         </div>

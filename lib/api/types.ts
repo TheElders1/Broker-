@@ -51,7 +51,7 @@ export type PortfolioSummary = {
 };
 
 export type WalletAssetBalance = {
-  asset: "BTC" | "USD" | string;
+  asset: "BTC" | "USDT" | "USD" | string;
   total: number;
   available: number;
   pending: number;
@@ -90,6 +90,44 @@ export type BitcoinWithdrawal = {
   destinationAddress: string;
   amountBtc: number;
   networkFeeBtc: number;
+  status: BitcoinTxStatus;
+  txId: string | null;
+  createdAt: string;
+};
+
+// USDT shares the same lifecycle statuses as Bitcoin (pending -> confirming
+// -> confirmed -> completed, or failed/cancelled).
+export type UsdtNetwork = "TRC20" | "ERC20" | "BEP20";
+
+export type UsdtDepositAddress = {
+  address: string;
+  network: UsdtNetwork;
+  assignedAt: string;
+};
+
+export type UsdtDeposit = {
+  id: string;
+  amountUsdt: number;
+  network: UsdtNetwork;
+  status: BitcoinTxStatus;
+  confirmations: number;
+  confirmationsRequired: number;
+  txId: string | null;
+  createdAt: string;
+};
+
+export type UsdtWithdrawalRequest = {
+  destinationAddress: string;
+  amountUsdt: number;
+  network: UsdtNetwork;
+};
+
+export type UsdtWithdrawal = {
+  id: string;
+  destinationAddress: string;
+  amountUsdt: number;
+  network: UsdtNetwork;
+  networkFeeUsdt: number;
   status: BitcoinTxStatus;
   txId: string | null;
   createdAt: string;
