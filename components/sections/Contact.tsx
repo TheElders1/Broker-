@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Icon from "@/components/Icon";
 import { Section, SectionHeading } from "@/components/Section";
-import { CONTACT_PLACEHOLDERS } from "@/lib/data";
+import { CONTACT_DETAILS } from "@/lib/data";
 
 type FormState = {
   name: string;
@@ -48,10 +48,10 @@ export default function Contact() {
   }
 
   const contactDetails = [
-    { icon: "mail", label: "Email", value: CONTACT_PLACEHOLDERS.email },
-    { icon: "phone", label: "Phone", value: CONTACT_PLACEHOLDERS.phone },
-    { icon: "pin", label: "Address", value: CONTACT_PLACEHOLDERS.address },
-    { icon: "clock", label: "Business Hours", value: CONTACT_PLACEHOLDERS.hours },
+    { icon: "mail", label: "Email", value: CONTACT_DETAILS.email },
+    { icon: "phone", label: "Phone", value: CONTACT_DETAILS.phone },
+    { icon: "pin", label: "Address", value: CONTACT_DETAILS.address },
+    { icon: "clock", label: "Business Hours", value: CONTACT_DETAILS.hours },
   ];
 
   return (

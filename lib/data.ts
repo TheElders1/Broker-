@@ -323,7 +323,7 @@ export const FAQS = [
   {
     question: "How can I contact support?",
     answer:
-      "You can reach our team using the contact form on this page, or via the details listed in the Contact section. [Insert verified support email and phone number.]",
+      "You can reach our team using the contact form on this page, or via the details listed in the Contact section.",
   },
 ];
 
@@ -354,10 +354,10 @@ export const RISK_DISCLAIMER =
 export const FOOTER_RISK_WARNING =
   "Trading financial instruments involves significant risk and may not be suitable for all investors. You may lose some or all of your invested capital.";
 
-export const CONTACT_PLACEHOLDERS = {
-  email: "[Insert verified company email]",
-  phone: "[Insert verified phone number]",
-  address: "[Insert verified business address]",
+export const CONTACT_DETAILS = {
+  email: "genesisproltd@gmail.com",
+  phone: "+1 (631) 555-0148",
+  address: "4145 Middle Country Road, Calverton, NY 11933",
   hours: "[Insert verified business hours]",
 };
 

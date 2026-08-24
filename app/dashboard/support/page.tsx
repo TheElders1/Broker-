@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Icon from "@/components/Icon";
 import { PageHeader, Widget } from "@/components/dashboard/DashboardWidgets";
-import { CONTACT_PLACEHOLDERS } from "@/lib/data";
+import { CONTACT_DETAILS } from "@/lib/data";
 
 export const metadata: Metadata = { title: "Support" };
 
@@ -17,21 +17,21 @@ export default function SupportPage() {
               <Icon name="mail" className="mt-0.5 h-4 w-4 text-gold-400" />
               <div>
                 <p className="text-xs uppercase tracking-wide text-white/40">Email</p>
-                <p className="text-sm text-white/80">{CONTACT_PLACEHOLDERS.email}</p>
+                <p className="text-sm text-white/80">{CONTACT_DETAILS.email}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <Icon name="phone" className="mt-0.5 h-4 w-4 text-gold-400" />
               <div>
                 <p className="text-xs uppercase tracking-wide text-white/40">Phone</p>
-                <p className="text-sm text-white/80">{CONTACT_PLACEHOLDERS.phone}</p>
+                <p className="text-sm text-white/80">{CONTACT_DETAILS.phone}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <Icon name="clock" className="mt-0.5 h-4 w-4 text-gold-400" />
               <div>
                 <p className="text-xs uppercase tracking-wide text-white/40">Business Hours</p>
-                <p className="text-sm text-white/80">{CONTACT_PLACEHOLDERS.hours}</p>
+                <p className="text-sm text-white/80">{CONTACT_DETAILS.hours}</p>
               </div>
             </div>
           </div>
