@@ -6,6 +6,7 @@ import LoginForm from "./LoginForm";
 export const metadata: Metadata = {
   title: "Login",
   description: "Log in to your Genesis Pro LTD account.",
+  alternates: { canonical: "/login" },
 };
 
 export default function LoginPage() {

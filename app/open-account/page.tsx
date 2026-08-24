@@ -5,6 +5,7 @@ import OpenAccountFlow from "./OpenAccountFlow";
 export const metadata: Metadata = {
   title: "Open Account",
   description: "Open a Genesis Pro LTD trading account in a few guided steps.",
+  alternates: { canonical: "/open-account" },
 };
 
 export default function OpenAccountPage() {

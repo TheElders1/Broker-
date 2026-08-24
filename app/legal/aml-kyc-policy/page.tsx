@@ -4,6 +4,7 @@ import LegalPage from "@/components/LegalPage";
 export const metadata: Metadata = {
   title: "AML/KYC Policy",
   description: "The anti-money laundering and know-your-customer approach applied by Genesis Pro LTD.",
+  alternates: { canonical: "/legal/aml-kyc-policy" },
 };
 
 export default function AmlKycPolicyPage() {

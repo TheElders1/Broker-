@@ -4,6 +4,7 @@ import LegalPage from "@/components/LegalPage";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "How Genesis Pro LTD collects, uses, and protects personal information.",
+  alternates: { canonical: "/legal/privacy-policy" },
 };
 
 export default function PrivacyPolicyPage() {

@@ -4,6 +4,7 @@ import LegalPage from "@/components/LegalPage";
 export const metadata: Metadata = {
   title: "Cookie Policy",
   description: "How Genesis Pro LTD uses cookies and similar technologies on this website.",
+  alternates: { canonical: "/legal/cookie-policy" },
 };
 
 export default function CookiePolicyPage() {

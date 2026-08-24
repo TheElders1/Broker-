@@ -4,6 +4,7 @@ import LegalPage from "@/components/LegalPage";
 export const metadata: Metadata = {
   title: "Terms & Conditions",
   description: "The terms and conditions governing use of the Genesis Pro LTD website and services.",
+  alternates: { canonical: "/legal/terms-conditions" },
 };
 
 export default function TermsConditionsPage() {

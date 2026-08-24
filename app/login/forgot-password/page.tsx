@@ -5,6 +5,8 @@ import AuthShell from "@/components/AuthShell";
 export const metadata: Metadata = {
   title: "Forgot Password",
   description: "Reset your Genesis Pro LTD account password.",
+  alternates: { canonical: "/login/forgot-password" },
+  robots: { index: false, follow: true },
 };
 
 export default function ForgotPasswordPage() {

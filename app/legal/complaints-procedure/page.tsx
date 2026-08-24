@@ -4,6 +4,7 @@ import LegalPage from "@/components/LegalPage";
 export const metadata: Metadata = {
   title: "Complaints Procedure",
   description: "How to raise a complaint with Genesis Pro LTD and what to expect.",
+  alternates: { canonical: "/legal/complaints-procedure" },
 };
 
 export default function ComplaintsProcedurePage() {

@@ -4,6 +4,7 @@ import LegalPage from "@/components/LegalPage";
 export const metadata: Metadata = {
   title: "Risk Disclosure",
   description: "Important information about the risks involved in trading financial instruments.",
+  alternates: { canonical: "/legal/risk-disclosure" },
 };
 
 export default function RiskDisclosurePage() {
