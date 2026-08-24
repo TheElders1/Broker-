@@ -1,0 +1,96 @@
+import { apiFetch } from "../client";
+import { IS_DEMO_MODE } from "../config";
+import { mockDelay } from "../mock";
+import { accountRequestsStore, adminUsersStore } from "../demoStore";
+import type { AccountRequest, AdminUser, CreateUserPayload } from "../types";
+
+/**
+ * Backend contract (VPS):
+ *   GET    /admin/users                    -> AdminUser[]
+ *   POST   /admin/users                    { firstName, lastName, email, accountType, initialBalanceUsd } -> AdminUser
+ *   PATCH  /admin/users/:id/balance        { newBalanceUsd, reason? } -> AdminUser
+ *   DELETE /admin/users/:id                -> 204
+ *   GET    /admin/account-requests          -> AccountRequest[]
+ *   PATCH  /admin/account-requests/:id      { status: "processed"|"dismissed" } -> AccountRequest
+ *
+ * SECURITY: every /admin/* endpoint must verify server-side that the
+ * caller holds an admin role — this frontend performs no authorization
+ * of its own and must never be treated as a security boundary. The
+ * /admin pages in this app are not linked from public navigation and are
+ * excluded from search indexing, but that is not access control; real
+ * deployments must gate the route itself behind authenticated admin
+ * login before any of this data is fetched.
+ */
+
+const demoUsers = adminUsersStore;
+const demoRequests = accountRequestsStore;
+
+export async function listUsers(): Promise<AdminUser[]> {
+  if (IS_DEMO_MODE) return mockDelay([...demoUsers]);
+  return apiFetch<AdminUser[]>("/admin/users");
+}
+
+export async function createUser(payload: CreateUserPayload): Promise<AdminUser> {
+  if (IS_DEMO_MODE) {
+    const user: AdminUser = {
+      id: `admin-demo-user-${Date.now()}`,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      email: payload.email,
+      accountType: payload.accountType,
+      balanceUsd: payload.initialBalanceUsd,
+      status: "active",
+      createdAt: new Date().toISOString(),
+    };
+    demoUsers.unshift(user);
+    return mockDelay(user, 600);
+  }
+  return apiFetch<AdminUser>("/admin/users", { method: "POST", body: payload });
+}
+
+export async function updateUserBalance(
+  userId: string,
+  newBalanceUsd: number,
+  reason?: string
+): Promise<AdminUser> {
+  if (IS_DEMO_MODE) {
+    const user = demoUsers.find((u) => u.id === userId);
+    if (!user) throw new Error("User not found.");
+    user.balanceUsd = newBalanceUsd;
+    return mockDelay({ ...user }, 500);
+  }
+  return apiFetch<AdminUser>(`/admin/users/${encodeURIComponent(userId)}/balance`, {
+    method: "PATCH",
+    body: { newBalanceUsd, reason },
+  });
+}
+
+export async function deleteUser(userId: string): Promise<void> {
+  if (IS_DEMO_MODE) {
+    const idx = demoUsers.findIndex((u) => u.id === userId);
+    if (idx !== -1) demoUsers.splice(idx, 1);
+    return mockDelay(undefined, 400);
+  }
+  await apiFetch<void>(`/admin/users/${encodeURIComponent(userId)}`, { method: "DELETE" });
+}
+
+export async function listAccountRequests(): Promise<AccountRequest[]> {
+  if (IS_DEMO_MODE) return mockDelay([...demoRequests]);
+  return apiFetch<AccountRequest[]>("/admin/account-requests");
+}
+
+export async function updateAccountRequestStatus(
+  requestId: string,
+  status: "processed" | "dismissed"
+): Promise<AccountRequest> {
+  if (IS_DEMO_MODE) {
+    const req = demoRequests.find((r) => r.id === requestId);
+    if (!req) throw new Error("Request not found.");
+    req.status = status;
+    return mockDelay({ ...req }, 300);
+  }
+  return apiFetch<AccountRequest>(`/admin/account-requests/${encodeURIComponent(requestId)}`, {
+    method: "PATCH",
+    body: { status },
+  });
+}

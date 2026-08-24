@@ -94,12 +94,32 @@ lib/api/
     kyc.ts           verification status, document upload
     notifications.ts in-app notifications
     support.ts       support tickets
+    accountRequests.ts  public Open Account form submission
+    admin.ts         admin: list/create/delete users, edit balances, review account requests
 ```
 
 Each service function checks `IS_DEMO_MODE`: in demo mode it returns mock data
 with a simulated delay; otherwise it calls the real backend via `apiFetch()`.
 **No UI component calls `fetch` directly** — this is what lets the backend
 get wired in without touching any page or component.
+
+## How accounts get created
+
+There is no self-service signup. The "Open Account" form (`/open-account`)
+submits a request via `accountRequestsApi` — it does not create a live
+account. An admin reviews submissions at `/admin/requests`, copies the
+details or clicks through to a pre-filled Create User form, and creates
+the account manually via `adminApi`. See `/admin` (Overview, Users,
+Account Requests) for the full admin panel: listing/creating/deleting
+users and editing balances.
+
+**`/admin` has no real authentication in this codebase.** It's not linked
+from public navigation and is excluded from search indexing, but that is
+not access control — anyone with the URL can reach it. Before going live,
+every `/admin/*` backend endpoint must verify the caller holds an admin
+role, and the `/admin` frontend route itself should redirect to login for
+non-admin sessions. See `BACKEND_INTEGRATION.md` for the full endpoint
+contract and what "done" needs to look like here specifically.
 
 ## Deployment (Render)
 

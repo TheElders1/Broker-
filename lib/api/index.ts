@@ -13,6 +13,8 @@ export * as transactionsApi from "./services/transactions";
 export * as kycApi from "./services/kyc";
 export * as notificationsApi from "./services/notifications";
 export * as supportApi from "./services/support";
+export * as accountRequestsApi from "./services/accountRequests";
+export * as adminApi from "./services/admin";
 
 export * from "./types";
 export { ApiError, ApiNetworkError, ApiTimeoutError, SESSION_EXPIRED_EVENT } from "./client";

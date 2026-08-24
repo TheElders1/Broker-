@@ -7,6 +7,8 @@
  */
 
 import type {
+  AccountRequest,
+  AdminUser,
   BitcoinDeposit,
   BitcoinDepositAddress,
   BitcoinWithdrawal,
@@ -97,6 +99,79 @@ export const MOCK_KYC_STATUS: KycStatusResponse = {
 export const MOCK_NOTIFICATIONS: NotificationItem[] = [];
 
 export const MOCK_SUPPORT_TICKETS: SupportTicket[] = [];
+
+// Sample demo records so the admin panel has something to show and act
+// on. These are clearly fictional — not real clients — and only exist
+// in this browser session; nothing here persists to a real database.
+export const MOCK_ADMIN_USERS: AdminUser[] = [
+  {
+    id: "admin-demo-user-1",
+    firstName: "Amara",
+    lastName: "Whitfield",
+    email: "amara.whitfield@example.com",
+    accountType: "Professional",
+    balanceUsd: 12480.5,
+    status: "active",
+    createdAt: "2026-02-11T09:30:00Z",
+  },
+  {
+    id: "admin-demo-user-2",
+    firstName: "Daniel",
+    lastName: "Osei",
+    email: "daniel.osei@example.com",
+    accountType: "Basic",
+    balanceUsd: 500,
+    status: "active",
+    createdAt: "2026-03-02T14:05:00Z",
+  },
+  {
+    id: "admin-demo-user-3",
+    firstName: "Priya",
+    lastName: "Nair",
+    email: "priya.nair@example.com",
+    accountType: "Premium",
+    balanceUsd: 84200,
+    status: "suspended",
+    createdAt: "2026-01-20T11:15:00Z",
+  },
+];
+
+export const MOCK_ACCOUNT_REQUESTS: AccountRequest[] = [
+  {
+    id: "req-demo-1",
+    firstName: "Marcus",
+    lastName: "Lindqvist",
+    dateOfBirth: "1991-04-12",
+    email: "marcus.lindqvist@example.com",
+    phone: "+46 70 123 4567",
+    address: "14 Storgatan",
+    city: "Stockholm",
+    postalCode: "111 22",
+    country: "Sweden",
+    accountType: "Professional",
+    currency: "USD",
+    experience: "Intermediate",
+    status: "pending",
+    submittedAt: "2026-08-20T16:42:00Z",
+  },
+  {
+    id: "req-demo-2",
+    firstName: "Chidinma",
+    lastName: "Eze",
+    dateOfBirth: "1997-09-03",
+    email: "chidinma.eze@example.com",
+    phone: "+234 802 555 0134",
+    address: "22 Adeola Odeku Street",
+    city: "Lagos",
+    postalCode: "106104",
+    country: "Nigeria",
+    accountType: "Basic",
+    currency: "USD",
+    experience: "Beginner",
+    status: "pending",
+    submittedAt: "2026-08-22T08:15:00Z",
+  },
+];
 
 export async function mockDelay<T>(value: T, ms = 450): Promise<T> {
   await new Promise((resolve) => setTimeout(resolve, ms));

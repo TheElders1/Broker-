@@ -133,6 +133,62 @@ export type UsdtWithdrawal = {
   createdAt: string;
 };
 
+// --- Admin ---
+
+export type AdminUser = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  accountType: User["accountType"];
+  balanceUsd: number;
+  status: "active" | "suspended";
+  createdAt: string;
+};
+
+export type CreateUserPayload = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  accountType: User["accountType"];
+  initialBalanceUsd: number;
+};
+
+export type AccountRequestStatus = "pending" | "processed" | "dismissed";
+
+export type AccountRequest = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  accountType: string;
+  currency: string;
+  experience: string;
+  status: AccountRequestStatus;
+  submittedAt: string;
+};
+
+export type SubmitAccountRequestPayload = {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  accountType: string;
+  currency: string;
+  experience: string;
+};
+
 export type Transaction = {
   id: string;
   type: "Deposit" | "Withdrawal" | "Trade Settlement" | "Transfer";

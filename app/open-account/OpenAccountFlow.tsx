@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import Icon from "@/components/Icon";
-import { register } from "@/lib/api/services/auth";
+import { submitAccountRequest } from "@/lib/api/services/accountRequests";
 import { ApiError } from "@/lib/api/client";
 import { COUNTRIES } from "@/lib/countries";
 
@@ -135,7 +135,7 @@ export default function OpenAccountFlow() {
     setSubmitting(true);
     setSubmitError(null);
     try {
-      await register({
+      await submitAccountRequest({
         firstName: data.firstName,
         lastName: data.lastName,
         dateOfBirth: data.dob,

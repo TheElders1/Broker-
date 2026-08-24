@@ -69,9 +69,15 @@ source of truth for field names and shapes.
 | --- | --- | --- | --- |
 | POST | `/auth/login` | `{ email, password }` | `{ user }` — also sets the session cookie |
 | POST | `/auth/logout` | — | `204` |
-| POST | `/auth/register` | registration fields (name, DOB, address, account preferences — see the 4-step form) | `{ user }` |
+| POST | `/auth/register` | registration fields | `{ user }` |
 | GET | `/auth/session` | — | `{ user }` (401 if not logged in) |
 | POST | `/auth/forgot-password` | `{ email }` | `204` |
+
+Note: `/auth/register` is defined for a future self-service signup path,
+but the current Open Account form does **not** call it — it submits to
+`/account-requests` instead (see below), since accounts are created
+manually by an admin. Deprioritize `/auth/register` unless you're adding
+self-service signup later.
 
 ### Users — `lib/api/services/users.ts`
 
@@ -186,6 +192,44 @@ document to whichever KYC provider the backend integrates with.
 | GET | `/support/tickets` | — | `SupportTicket[]` — `{ id, subject, status, createdAt }` |
 | POST | `/support/tickets` | `{ topic, details }` | `SupportTicket` |
 
+### Account Requests — `lib/api/services/accountRequests.ts` (public, used by the Open Account form)
+
+| Method | Path | Body | Returns |
+| --- | --- | --- | --- |
+| POST | `/account-requests` | `{ firstName, lastName, dateOfBirth, email, phone, address, city, postalCode, country, accountType, currency, experience }` | `AccountRequest` |
+
+This is the actual "Open Account" form submission. It does **not** create a
+live account — it queues a request for an admin to review and manually
+create the account via the Admin endpoints below. No KYC document upload
+happens on this form; that step was intentionally removed in favor of
+manual admin-side account creation.
+
+### Admin — `lib/api/services/admin.ts` (powers `/admin/users` and `/admin/requests`)
+
+| Method | Path | Body | Returns |
+| --- | --- | --- | --- |
+| GET | `/admin/users` | — | `AdminUser[]` — `{ id, firstName, lastName, email, accountType, balanceUsd, status: "active"\|"suspended", createdAt }` |
+| POST | `/admin/users` | `{ firstName, lastName, email, accountType, initialBalanceUsd }` | `AdminUser` |
+| PATCH | `/admin/users/:id/balance` | `{ newBalanceUsd, reason? }` | `AdminUser` |
+| DELETE | `/admin/users/:id` | — | `204` |
+| GET | `/admin/account-requests` | — | `AccountRequest[]` — same shape as above plus `status: "pending"\|"processed"\|"dismissed"`, `submittedAt` |
+| PATCH | `/admin/account-requests/:id` | `{ status: "processed"\|"dismissed" }` | `AccountRequest` |
+
+**This is the one that needs real access control before launch.** The
+`/admin` pages in the frontend are not linked from public navigation and
+are excluded from search indexing, but that is not authentication — right
+now literally anyone who finds the URL can view and edit demo data. Before
+going live:
+
+1. Every `/admin/*` endpoint must verify server-side that the caller is
+   logged in **and** holds an admin role — not just a valid session.
+2. Consider whether the `/admin` frontend route itself should redirect to
+   login when the session isn't an admin session, rather than rendering
+   the shell and only failing on data fetches.
+3. Balance edits should probably be logged server-side (who changed what,
+   when, and why) even though the frontend only sends the new value and an
+   optional free-text reason today.
+
 ---
 
 ## 5. Suggested rollout order
@@ -193,17 +237,22 @@ document to whichever KYC provider the backend integrates with.
 You don't need all of this on day one. A sensible build order for your
 backend developer:
 
-1. **Auth** (`/auth/login`, `/auth/session`, `/auth/register`) — nothing
-   else matters until sessions work.
-2. **Users / Accounts** — basic profile.
-3. **Wallet + Bitcoin + USDT** — this is the core "why we're doing this"
+1. **Auth** (`/auth/login`, `/auth/session`) — nothing else matters until
+   sessions work.
+2. **Account Requests + Admin** (`/account-requests`, `/admin/users`,
+   `/admin/account-requests`) — this is how accounts actually get created
+   right now: a visitor submits the Open Account form, an admin reviews it
+   in `/admin/requests` and creates the account. Get this working early so
+   you have real (non-seed) users to test everything else against.
+3. **Users / Accounts** — basic profile.
+4. **Wallet + Bitcoin + USDT** — this is the core "why we're doing this"
    feature: deposit address, deposit status, withdrawal request + status,
    for both assets.
-4. **Portfolio / Transactions** — history and balances.
-5. **Markets / Trading** — can stay on demo data the longest, since it
+5. **Portfolio / Transactions** — history and balances.
+6. **Markets / Trading** — can stay on demo data the longest, since it
    needs a licensed market-data feed and execution engine, which is a
    bigger lift than the rest.
-6. **KYC / Notifications / Support** — round these out once the core money
+7. **KYC / Notifications / Support** — round these out once the core money
    flows are solid.
 
 ## 6. What "done" looks like for one endpoint
