@@ -41,19 +41,12 @@ type FormData = {
   accountType: string;
   currency: string;
   experience: string;
-  idType: string;
   termsAccepted: boolean;
   privacyAccepted: boolean;
   riskAccepted: boolean;
 };
 
-const STEPS = [
-  "Personal Information",
-  "Contact Information",
-  "Account Preferences",
-  "Identity Verification",
-  "Confirmation",
-];
+const STEPS = ["Personal Information", "Contact Information", "Account Preferences", "Confirmation"];
 
 const initialData: FormData = {
   firstName: "",
@@ -68,7 +61,6 @@ const initialData: FormData = {
   accountType: "Basic",
   currency: "USD",
   experience: "Beginner",
-  idType: "Passport",
   termsAccepted: false,
   privacyAccepted: false,
   riskAccepted: false,
@@ -114,7 +106,7 @@ export default function OpenAccountFlow() {
       if (!data.city.trim()) e.city = "City is required.";
       if (!data.postalCode.trim()) e.postalCode = "Postal code is required.";
     }
-    if (step === 4) {
+    if (step === 3) {
       if (!data.termsAccepted) e.termsAccepted = "You must accept the Terms & Conditions.";
       if (!data.privacyAccepted) e.privacyAccepted = "You must accept the Privacy Policy.";
       if (!data.riskAccepted) e.riskAccepted = "You must acknowledge the Risk Disclosure.";
@@ -156,7 +148,6 @@ export default function OpenAccountFlow() {
         accountType: data.accountType,
         currency: data.currency,
         experience: data.experience,
-        idType: data.idType,
       });
       setSubmitted(true);
     } catch (err) {
@@ -178,9 +169,10 @@ export default function OpenAccountFlow() {
           Application Received
         </h2>
         <p className="max-w-md text-sm leading-relaxed text-white/60">
-          Thank you, {data.firstName || "there"}. Your application was submitted through the
-          demo API layer — no real account has been created, since this environment is not yet
-          connected to the live registration and KYC backend.
+          Thank you, {data.firstName || "there"}. Your details were submitted through the demo
+          API layer. Our team reviews new applications and sets up verified accounts manually —
+          no real account has been created yet, since this environment is not yet connected to
+          the live backend.
         </p>
         <Link href="/" className="btn-gold mt-2">
           Return to Homepage
@@ -220,8 +212,6 @@ export default function OpenAccountFlow() {
           <StepContact data={data} update={update} errors={errors} />
         ) : step === 2 ? (
           <StepPreferences data={data} update={update} />
-        ) : step === 3 ? (
-          <StepKYC data={data} update={update} />
         ) : (
           <StepConfirmation data={data} update={update} errors={errors} />
         )}
@@ -449,52 +439,6 @@ function StepPreferences({
   );
 }
 
-function StepKYC({
-  data,
-  update,
-}: {
-  data: FormData;
-  update: <K extends keyof FormData>(key: K, value: FormData[K]) => void;
-}) {
-  return (
-    <div className="flex flex-col gap-5">
-      <Field id="idType" label="Identity Document Type">
-        <select
-          id="idType"
-          className="input-field"
-          value={data.idType}
-          onChange={(e) => update("idType", e.target.value)}
-        >
-          <option>Passport</option>
-          <option>National ID Card</option>
-          <option>Driver&apos;s License</option>
-        </select>
-      </Field>
-
-      <div>
-        <span className="label-field">Upload Document</span>
-        <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-white/15 bg-white/[0.02] px-6 py-10 text-center">
-          <Icon name="lock" className="h-6 w-6 text-white/30" />
-          <p className="text-sm text-white/50">
-            Document upload will be available once a verified KYC provider is connected.
-          </p>
-          <button type="button" disabled className="btn-outline mt-2 cursor-not-allowed opacity-50">
-            Choose File
-          </button>
-        </div>
-      </div>
-
-      <div className="flex items-start gap-2.5 rounded-lg border border-royal-400/30 bg-royal-500/10 p-4 text-sm text-royal-200">
-        <Icon name="shield" className="mt-0.5 h-4 w-4 shrink-0" />
-        <p>
-          We only request identity information required for standard KYC/AML verification. No
-          unnecessary sensitive data is collected on this form.
-        </p>
-      </div>
-    </div>
-  );
-}
-
 function StepConfirmation({
   data,
   update,
@@ -511,7 +455,6 @@ function StepConfirmation({
     { label: "Country", value: data.country || "—" },
     { label: "Account Type", value: data.accountType },
     { label: "Base Currency", value: data.currency },
-    { label: "ID Document", value: data.idType },
   ];
 
   return (

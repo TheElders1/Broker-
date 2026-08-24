@@ -69,7 +69,7 @@ source of truth for field names and shapes.
 | --- | --- | --- | --- |
 | POST | `/auth/login` | `{ email, password }` | `{ user }` — also sets the session cookie |
 | POST | `/auth/logout` | — | `204` |
-| POST | `/auth/register` | registration fields (name, DOB, address, account preferences, ID type — see the 5-step form) | `{ user }` |
+| POST | `/auth/register` | registration fields (name, DOB, address, account preferences — see the 4-step form) | `{ user }` |
 | GET | `/auth/session` | — | `{ user }` (401 if not logged in) |
 | POST | `/auth/forgot-password` | `{ email }` | `204` |
 

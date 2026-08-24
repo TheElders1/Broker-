@@ -21,7 +21,7 @@ export default function TradingPlatform() {
           Start Trading
           <Icon name="arrow" className="h-4 w-4" />
         </Link>
-        <Link href="/#education" className="btn-outline">
+        <Link href="/education" className="btn-outline">
           Learn More
         </Link>
       </div>

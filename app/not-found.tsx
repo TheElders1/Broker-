@@ -22,7 +22,7 @@ export default function NotFound() {
               <Icon name="arrow" className="h-4 w-4 rotate-180" />
               Back to Homepage
             </Link>
-            <Link href="/#contact" className="btn-outline">
+            <Link href="/contact" className="btn-outline">
               Contact Support
             </Link>
           </div>

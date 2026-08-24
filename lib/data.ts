@@ -1,23 +1,24 @@
 export type NavLink = { label: string; href: string };
 
 export const NAV_LINKS: NavLink[] = [
-  { label: "Home", href: "/#home" },
-  { label: "About Us", href: "/#about" },
+  { label: "Home", href: "/" },
+  { label: "About Us", href: "/about" },
   { label: "Markets", href: "/#markets" },
   { label: "Trading", href: "/#trading" },
   { label: "Why Genesis Pro", href: "/#why-genesis-pro" },
-  { label: "Education", href: "/#education" },
-  { label: "FAQ", href: "/#faq" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Education", href: "/education" },
+  { label: "FAQ", href: "/faq" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export const FOOTER_NAV: NavLink[] = [
-  { label: "About", href: "/#about" },
+  { label: "About", href: "/about" },
   { label: "Markets", href: "/#markets" },
   { label: "Trading", href: "/#trading" },
-  { label: "Education", href: "/#education" },
-  { label: "FAQ", href: "/#faq" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Education", href: "/education" },
+  { label: "Risk Management", href: "/risk-management" },
+  { label: "FAQ", href: "/faq" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export const LEGAL_LINKS: NavLink[] = [

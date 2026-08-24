@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import Icon from "@/components/Icon";
@@ -67,48 +68,60 @@ export default function Header() {
         </button>
       </div>
 
-      {open ? (
-        <div className="fixed inset-0 z-[60] lg:hidden">
-          <div
-            className="absolute inset-0 bg-ink-950/80 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
-            aria-hidden="true"
-          />
-          <div className="absolute right-0 top-0 flex h-full w-full max-w-sm flex-col gap-8 border-l border-white/10 bg-ink-900 p-6 shadow-2xl">
-            <div className="flex items-center justify-between">
-              <Logo />
-              <button
-                type="button"
+      {/*
+        Rendered via a portal into document.body rather than as a child of
+        this <header>. A "fixed" element nested inside an ancestor that has
+        backdrop-filter/filter/transform (this header gets backdrop-blur-md
+        once scrolled) is repositioned relative to that ancestor instead of
+        the viewport per the CSS spec — which made this overlay collapse to
+        the header's own height and let page content show through. Portaling
+        to <body> sidesteps that entirely, permanently.
+      */}
+      {open
+        ? createPortal(
+            <div className="fixed inset-0 z-[100] lg:hidden">
+              <div
+                className="absolute inset-0 bg-ink-950/80 backdrop-blur-sm"
                 onClick={() => setOpen(false)}
-                className="rounded-lg border border-white/10 p-2 text-white"
-                aria-label="Close menu"
-              >
-                <Icon name="close" className="h-5 w-5" />
-              </button>
-            </div>
-            <nav className="flex flex-col gap-1" aria-label="Mobile">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="rounded-lg px-3 py-3 text-base font-medium text-white/85 transition-colors hover:bg-white/5 hover:text-gold-300"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-            <div className="mt-auto flex flex-col gap-3">
-              <Link href="/login" onClick={() => setOpen(false)} className="btn-outline w-full">
-                Login
-              </Link>
-              <Link href="/open-account" onClick={() => setOpen(false)} className="btn-gold w-full">
-                Open Account
-              </Link>
-            </div>
-          </div>
-        </div>
-      ) : null}
+                aria-hidden="true"
+              />
+              <div className="absolute right-0 top-0 flex h-full w-full max-w-sm flex-col gap-8 border-l border-white/10 bg-ink-900 p-6 shadow-2xl">
+                <div className="flex items-center justify-between">
+                  <Logo />
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="rounded-lg border border-white/10 p-2 text-white"
+                    aria-label="Close menu"
+                  >
+                    <Icon name="close" className="h-5 w-5" />
+                  </button>
+                </div>
+                <nav className="flex flex-col gap-1" aria-label="Mobile">
+                  {NAV_LINKS.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      className="rounded-lg px-3 py-3 text-base font-medium text-white/85 transition-colors hover:bg-white/5 hover:text-gold-300"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </nav>
+                <div className="mt-auto flex flex-col gap-3">
+                  <Link href="/login" onClick={() => setOpen(false)} className="btn-outline w-full">
+                    Login
+                  </Link>
+                  <Link href="/open-account" onClick={() => setOpen(false)} className="btn-gold w-full">
+                    Open Account
+                  </Link>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
     </header>
   );
 }

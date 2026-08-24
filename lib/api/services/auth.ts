@@ -50,7 +50,6 @@ export type RegistrationPayload = {
   accountType: string;
   currency: string;
   experience: string;
-  idType: string;
 };
 
 export async function register(payload: RegistrationPayload): Promise<AuthSession> {
