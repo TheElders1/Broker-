@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/siteUrl";
 
 const routes = [
   "",
@@ -13,9 +14,8 @@ const routes = [
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://genesispro.example.com";
   return routes.map((route) => ({
-    url: `${base}${route}`,
+    url: `${SITE_URL}${route}`,
     lastModified: new Date(),
   }));
 }

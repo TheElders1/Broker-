@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Reveal from "@/components/Reveal";
+import { SITE_URL } from "@/lib/siteUrl";
 
 const sans = Inter({
   subsets: ["latin"],
@@ -15,10 +16,8 @@ const display = Playfair_Display({
   display: "swap",
 });
 
-const siteUrl = "https://genesispro.example.com";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Genesis Pro LTD | Online Trading & Global Markets Platform",
     template: "%s | Genesis Pro LTD",
@@ -37,7 +36,7 @@ export const metadata: Metadata = {
     title: "Genesis Pro LTD | Online Trading & Global Markets Platform",
     description:
       "Access global financial markets through a modern trading experience built around transparency, technology, and informed decision-making.",
-    url: siteUrl,
+    url: SITE_URL,
     siteName: "Genesis Pro LTD",
     type: "website",
   },
