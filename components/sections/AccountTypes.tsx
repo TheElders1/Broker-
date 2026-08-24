@@ -12,14 +12,14 @@ export default function AccountTypes() {
         description="All figures below are placeholders pending verified company information — final terms will be confirmed before account opening."
       />
 
-      <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="mt-16 grid grid-cols-1 gap-6 lg:grid-cols-3">
         {ACCOUNT_TYPES.map((account, i) => (
           <div
             key={account.name}
-            className={`reveal relative flex flex-col rounded-xl2 border p-7 transition-all duration-300 hover:-translate-y-1 ${
+            className={`reveal relative flex flex-col rounded-xl2 border p-7 transition-all duration-300 hover:-translate-y-0.5 ${
               account.featured
-                ? "border-gold-500/40 bg-gradient-to-b from-gold-500/[0.08] to-transparent shadow-glow"
-                : "border-white/10 bg-white/[0.02]"
+                ? "border-gold-500/30 bg-gradient-to-b from-gold-500/[0.06] to-transparent shadow-glow"
+                : "border-white/[0.08] bg-white/[0.015] hover:border-white/[0.16]"
             }`}
             style={{ animationDelay: `${i * 90}ms` }}
           >

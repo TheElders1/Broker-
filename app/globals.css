@@ -30,7 +30,7 @@ body {
 @keyframes reveal-fade-up {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -49,32 +49,32 @@ body {
   opacity: 0;
 }
 .reveal.reveal-pending.in-view {
-  animation: reveal-fade-up 0.7s ease-out forwards;
+  animation: reveal-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @layer components {
   .glass-card {
-    @apply relative rounded-xl2 border border-white/10 bg-white/[0.03] backdrop-blur-sm;
+    @apply relative rounded-xl2 border border-white/[0.07] bg-white/[0.025] backdrop-blur-sm;
   }
 
   .section-eyebrow {
-    @apply inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-gold-500/[0.06] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-gold-300;
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-gold-400/90;
   }
 
   .btn-gold {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-gold-gradient px-6 py-3 text-sm font-semibold text-ink-950 shadow-glow transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-gold-gradient px-6 py-3 text-sm font-semibold text-ink-950 shadow-glow transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98];
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.02] px-6 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:border-gold-400/50 hover:bg-white/[0.06];
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-transparent px-6 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:border-white/30 hover:bg-white/[0.04];
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-white/80 transition-colors hover:text-gold-300;
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-white/80 transition-colors hover:text-white;
   }
 
   .card-hover {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/30 hover:shadow-glow;
+    @apply transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-white/[0.14] hover:bg-white/[0.035];
   }
 
   .input-field {
