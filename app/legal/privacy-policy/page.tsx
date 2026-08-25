@@ -29,7 +29,7 @@ export default function PrivacyPolicyPage() {
         {
           heading: "3. Legal Basis for Processing",
           body: [
-            "[Insert verified legal basis for processing personal data applicable to your jurisdiction, e.g. consent, contract, legal obligation, or legitimate interest.]",
+            "Depending on the activity, we may rely on your consent, the necessity of processing to perform our contract with you, compliance with a legal obligation, or our legitimate interests. The final legal basis for each processing activity will be confirmed against the specific jurisdictions in which Genesis Pro LTD operates.",
           ],
         },
         {
@@ -65,7 +65,7 @@ export default function PrivacyPolicyPage() {
         {
           heading: "9. International Transfers",
           body: [
-            "[Insert verified information about any international transfer of personal data and applicable safeguards.]",
+            "Where personal data is transferred internationally, Genesis Pro LTD will implement appropriate safeguards required by applicable data-protection law.",
           ],
         },
         {

@@ -40,7 +40,7 @@ export default function ComplaintsProcedurePage() {
         {
           heading: "5. Escalation",
           body: [
-            "If you are not satisfied with the outcome of your complaint, you may request that it be reviewed by senior management. [Insert verified external dispute resolution body or regulator, if applicable to your jurisdiction.]",
+            "If you are not satisfied with the outcome of your complaint, you may request that it be reviewed by senior management. Where applicable, unresolved complaints may be escalated to the competent external dispute-resolution body or regulator. [Insert verified external dispute resolution body or regulator once the applicable regulator and jurisdiction are confirmed.]",
           ],
         },
         {

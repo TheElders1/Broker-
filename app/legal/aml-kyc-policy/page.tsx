@@ -40,13 +40,13 @@ export default function AmlKycPolicyPage() {
         {
           heading: "5. Record Keeping",
           body: [
-            "[Insert verified record retention periods for KYC/AML documentation, consistent with applicable law.]",
+            "Records will be retained for the period required by applicable law and regulatory requirements.",
           ],
         },
         {
           heading: "6. Reporting Obligations",
           body: [
-            "[Insert verified information regarding suspicious activity reporting obligations and the relevant regulatory or financial intelligence authority, if applicable.]",
+            "Where required, suspicious activity will be reported to the relevant financial intelligence authority. The specific reporting authority applicable to Genesis Pro LTD is to be provided after legal/regulatory review.",
           ],
         },
         {
@@ -58,7 +58,7 @@ export default function AmlKycPolicyPage() {
         {
           heading: "8. Regulatory Status",
           body: [
-            "[Insert verified regulatory status and applicable AML supervisory authority once confirmed.]",
+            "[Insert verified regulatory status once confirmed.] The applicable AML supervisory authority is to be provided after legal/regulatory review.",
           ],
         },
       ]}

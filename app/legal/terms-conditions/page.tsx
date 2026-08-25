@@ -22,7 +22,7 @@ export default function TermsConditionsPage() {
         {
           heading: "2. Eligibility",
           body: [
-            "You must be at least 18 years old and have the legal capacity to enter into a binding agreement to open an account. [Insert verified list of any jurisdictions Genesis Pro LTD does not accept clients from.]",
+            "You must be at least 18 years old and have the legal capacity to enter into a binding agreement to open an account. Client eligibility is subject to applicable laws, regulations, and Genesis Pro LTD's internal compliance requirements. The final list of restricted jurisdictions will be published after legal review.",
           ],
         },
         {
