@@ -181,7 +181,7 @@ export const ACCOUNT_TYPES: AccountType[] = [
     tagline: "For active, experienced traders",
     featured: true,
     fields: [
-      { label: "Minimum Deposit", value: "$2,500" },
+      { label: "Minimum Deposit", value: "$3,000" },
       { label: "Spreads", value: "From 0.8 pips" },
       { label: "Commission", value: "$5 per lot" },
       { label: "Leverage", value: "Up to 1:100" },
