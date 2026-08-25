@@ -7,8 +7,31 @@ import Icon from "@/components/Icon";
 import { createUser } from "@/lib/api/services/admin";
 import { ApiError } from "@/lib/api/client";
 import type { User } from "@/lib/api/types";
+import { COUNTRIES } from "@/lib/countries";
+import { CURRENCIES } from "@/lib/currencies";
 
 const ACCOUNT_TYPES: User["accountType"][] = ["Basic", "Professional", "Premium"];
+const EXPERIENCE_LEVELS = ["Beginner", "Intermediate", "Experienced"];
+const MIN_AGE = 18;
+
+function calculateAge(dob: string): number | null {
+  if (!dob) return null;
+  const birthDate = new Date(dob);
+  if (Number.isNaN(birthDate.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const hasHadBirthdayThisYear =
+    today.getMonth() > birthDate.getMonth() ||
+    (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+  if (!hasHadBirthdayThisYear) age -= 1;
+  return age;
+}
+
+function maxDobForMinAge(): string {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - MIN_AGE);
+  return d.toISOString().slice(0, 10);
+}
 
 export default function CreateUserForm() {
   const router = useRouter();
@@ -16,10 +39,18 @@ export default function CreateUserForm() {
 
   const [firstName, setFirstName] = useState(searchParams.get("firstName") ?? "");
   const [lastName, setLastName] = useState(searchParams.get("lastName") ?? "");
+  const [dob, setDob] = useState(searchParams.get("dob") ?? "");
+  const [country, setCountry] = useState(searchParams.get("country") ?? "");
   const [email, setEmail] = useState(searchParams.get("email") ?? "");
+  const [phone, setPhone] = useState(searchParams.get("phone") ?? "");
+  const [address, setAddress] = useState(searchParams.get("address") ?? "");
+  const [city, setCity] = useState(searchParams.get("city") ?? "");
+  const [postalCode, setPostalCode] = useState(searchParams.get("postalCode") ?? "");
   const [accountType, setAccountType] = useState<User["accountType"]>(
     (searchParams.get("accountType") as User["accountType"]) || "Basic"
   );
+  const [currency, setCurrency] = useState(searchParams.get("currency") ?? "USD");
+  const [experience, setExperience] = useState(searchParams.get("experience") ?? "Beginner");
   const [initialBalance, setInitialBalance] = useState("0");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +69,23 @@ export default function CreateUserForm() {
       setError("Enter a valid email address.");
       return;
     }
+    if (!dob) {
+      setError("Date of birth is required.");
+      return;
+    }
+    const age = calculateAge(dob);
+    if (age === null || age < MIN_AGE) {
+      setError(`The client must be at least ${MIN_AGE} years old.`);
+      return;
+    }
+    if (!country) {
+      setError("Country of residence is required.");
+      return;
+    }
+    if (!phone.trim() || !address.trim() || !city.trim() || !postalCode.trim()) {
+      setError("Phone, address, city, and postal code are all required.");
+      return;
+    }
     const balance = Number(initialBalance);
     if (Number.isNaN(balance) || balance < 0) {
       setError("Enter a valid, non-negative initial balance.");
@@ -47,7 +95,21 @@ export default function CreateUserForm() {
     setSubmitting(true);
     setError(null);
     try {
-      const result = await createUser({ firstName, lastName, email, accountType, initialBalanceUsd: balance });
+      const result = await createUser({
+        firstName,
+        lastName,
+        email,
+        accountType,
+        initialBalanceUsd: balance,
+        dateOfBirth: dob,
+        country,
+        phone,
+        address,
+        city,
+        postalCode,
+        currency,
+        experience,
+      });
       if (result.temporaryPassword) {
         setCreatedPassword(result.temporaryPassword);
       } else {
@@ -123,74 +185,167 @@ export default function CreateUserForm() {
         </div>
       ) : null}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <div>
-            <label htmlFor="firstName" className="label-field">
-              First Name
-            </label>
-            <input
-              id="firstName"
-              className="input-field"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-          </div>
-          <div>
-            <label htmlFor="lastName" className="label-field">
-              Last Name
-            </label>
-            <input
-              id="lastName"
-              className="input-field"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
+      <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+        <div className="flex flex-col gap-5">
+          <h2 className="font-display text-base font-semibold text-white">Personal Information</h2>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div>
+              <label htmlFor="firstName" className="label-field">
+                First Name
+              </label>
+              <input
+                id="firstName"
+                className="input-field"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="lastName" className="label-field">
+                Last Name
+              </label>
+              <input
+                id="lastName"
+                className="input-field"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="dob" className="label-field">
+                Date of Birth
+              </label>
+              <input
+                id="dob"
+                type="date"
+                className="input-field"
+                value={dob}
+                max={maxDobForMinAge()}
+                onChange={(e) => setDob(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="country" className="label-field">
+                Country of Residence
+              </label>
+              <select id="country" className="input-field" value={country} onChange={(e) => setCountry(e.target.value)}>
+                <option value="">Select country</option>
+                {COUNTRIES.map((c) => (
+                  <option key={c.code} value={c.name}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
-        <div>
-          <label htmlFor="email" className="label-field">
-            Email Address
-          </label>
-          <input
-            id="email"
-            type="email"
-            className="input-field"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        <div className="flex flex-col gap-5 border-t border-white/10 pt-6">
+          <h2 className="font-display text-base font-semibold text-white">Contact Information</h2>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div>
+              <label htmlFor="email" className="label-field">
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                className="input-field"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="phone" className="label-field">
+                Phone Number
+              </label>
+              <input id="phone" type="tel" className="input-field" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="address" className="label-field">
+                Street Address
+              </label>
+              <input id="address" className="input-field" value={address} onChange={(e) => setAddress(e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="city" className="label-field">
+                City
+              </label>
+              <input id="city" className="input-field" value={city} onChange={(e) => setCity(e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="postalCode" className="label-field">
+                Postal Code
+              </label>
+              <input
+                id="postalCode"
+                className="input-field"
+                value={postalCode}
+                onChange={(e) => setPostalCode(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <div>
-            <label htmlFor="accountType" className="label-field">
-              Account Type
-            </label>
-            <select
-              id="accountType"
-              className="input-field"
-              value={accountType}
-              onChange={(e) => setAccountType(e.target.value as User["accountType"])}
-            >
-              {ACCOUNT_TYPES.map((t) => (
-                <option key={t}>{t}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="initialBalance" className="label-field">
-              Initial Balance (USD)
-            </label>
-            <input
-              id="initialBalance"
-              type="number"
-              min="0"
-              step="0.01"
-              className="input-field"
-              value={initialBalance}
-              onChange={(e) => setInitialBalance(e.target.value)}
-            />
+        <div className="flex flex-col gap-5 border-t border-white/10 pt-6">
+          <h2 className="font-display text-base font-semibold text-white">Account Preferences</h2>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div>
+              <label htmlFor="accountType" className="label-field">
+                Account Type
+              </label>
+              <select
+                id="accountType"
+                className="input-field"
+                value={accountType}
+                onChange={(e) => setAccountType(e.target.value as User["accountType"])}
+              >
+                {ACCOUNT_TYPES.map((t) => (
+                  <option key={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="initialBalance" className="label-field">
+                Initial Balance (USD)
+              </label>
+              <input
+                id="initialBalance"
+                type="number"
+                min="0"
+                step="0.01"
+                className="input-field"
+                value={initialBalance}
+                onChange={(e) => setInitialBalance(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="currency" className="label-field">
+                Base Currency
+              </label>
+              <select id="currency" className="input-field" value={currency} onChange={(e) => setCurrency(e.target.value)}>
+                {CURRENCIES.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.code} ({c.symbol}) — {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="experience" className="label-field">
+                Trading Experience
+              </label>
+              <select
+                id="experience"
+                className="input-field"
+                value={experience}
+                onChange={(e) => setExperience(e.target.value)}
+              >
+                {EXPERIENCE_LEVELS.map((l) => (
+                  <option key={l}>{l}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 

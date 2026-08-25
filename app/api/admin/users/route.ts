@@ -86,8 +86,36 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => null);
-  const { firstName, lastName, email, accountType, initialBalanceUsd } = body ?? {};
-  if (!firstName || !lastName || !email || !accountType || typeof initialBalanceUsd !== "number") {
+  const {
+    firstName,
+    lastName,
+    email,
+    accountType,
+    initialBalanceUsd,
+    dateOfBirth,
+    country,
+    phone,
+    address,
+    city,
+    postalCode,
+    currency,
+    experience,
+  } = body ?? {};
+  if (
+    !firstName ||
+    !lastName ||
+    !email ||
+    !accountType ||
+    typeof initialBalanceUsd !== "number" ||
+    !dateOfBirth ||
+    !country ||
+    !phone ||
+    !address ||
+    !city ||
+    !postalCode ||
+    !currency ||
+    !experience
+  ) {
     return NextResponse.json({ message: "Missing or invalid fields." }, { status: 400 });
   }
 
@@ -108,11 +136,23 @@ export async function POST(request: Request) {
   }
 
   // The on_auth_user_created trigger already inserted a profiles row with
-  // defaults (account_type 'Basic', balance_usd 0) — update it to match
-  // what the admin actually chose.
+  // defaults (account_type 'Basic', balance_usd 0, no detail fields) —
+  // fill it in with everything the admin entered, matching the same
+  // fields the public Open Account form collects.
   const { data: profile, error: updateError } = await supabase
     .from("profiles")
-    .update({ account_type: accountType, balance_usd: initialBalanceUsd })
+    .update({
+      account_type: accountType,
+      balance_usd: initialBalanceUsd,
+      date_of_birth: dateOfBirth,
+      country,
+      phone,
+      address,
+      city,
+      postal_code: postalCode,
+      currency,
+      experience,
+    })
     .eq("id", created.user.id)
     .select(PROFILE_COLUMNS)
     .single();

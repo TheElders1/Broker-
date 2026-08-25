@@ -71,6 +71,14 @@ export async function createUser(
       balanceUsd: payload.initialBalanceUsd,
       status: "active",
       createdAt: new Date().toISOString(),
+      dateOfBirth: payload.dateOfBirth,
+      phone: payload.phone,
+      address: payload.address,
+      city: payload.city,
+      postalCode: payload.postalCode,
+      country: payload.country,
+      currency: payload.currency,
+      experience: payload.experience,
     };
     demoUsers.unshift(user);
     return mockDelay({ user }, 600);

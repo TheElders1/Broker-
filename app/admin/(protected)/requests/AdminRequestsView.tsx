@@ -114,11 +114,21 @@ export default function AdminRequestsView() {
                     {copiedId === r.id ? "Copied" : "Copy Details"}
                   </button>
                   <Link
-                    href={`/admin/users/new?fromRequest=${r.id}&firstName=${encodeURIComponent(
-                      r.firstName
-                    )}&lastName=${encodeURIComponent(r.lastName)}&email=${encodeURIComponent(
-                      r.email
-                    )}&accountType=${encodeURIComponent(r.accountType)}`}
+                    href={`/admin/users/new?${new URLSearchParams({
+                      fromRequest: r.id,
+                      firstName: r.firstName,
+                      lastName: r.lastName,
+                      email: r.email,
+                      accountType: r.accountType,
+                      dob: r.dateOfBirth,
+                      country: r.country,
+                      phone: r.phone,
+                      address: r.address,
+                      city: r.city,
+                      postalCode: r.postalCode,
+                      currency: r.currency,
+                      experience: r.experience,
+                    }).toString()}`}
                     className="btn-gold"
                     onClick={() => handleStartCreateAccount(r)}
                   >

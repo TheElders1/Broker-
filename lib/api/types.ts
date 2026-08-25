@@ -163,6 +163,14 @@ export type CreateUserPayload = {
   email: string;
   accountType: User["accountType"];
   initialBalanceUsd: number;
+  dateOfBirth: string;
+  country: string;
+  phone: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  currency: string;
+  experience: string;
 };
 
 export type AccountRequestStatus = "pending" | "processed" | "dismissed";
