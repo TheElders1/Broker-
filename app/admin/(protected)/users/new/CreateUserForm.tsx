@@ -52,12 +52,14 @@ export default function CreateUserForm() {
   const [currency, setCurrency] = useState(searchParams.get("currency") ?? "USD");
   const [experience, setExperience] = useState(searchParams.get("experience") ?? "Beginner");
   const [initialBalance, setInitialBalance] = useState("0");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [createdPassword, setCreatedPassword] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
 
   const fromRequest = searchParams.get("fromRequest");
+  const MIN_PASSWORD_LENGTH = 8;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -86,6 +88,14 @@ export default function CreateUserForm() {
       setError("Phone, address, city, and postal code are all required.");
       return;
     }
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
     const balance = Number(initialBalance);
     if (Number.isNaN(balance) || balance < 0) {
       setError("Enter a valid, non-negative initial balance.");
@@ -95,10 +105,11 @@ export default function CreateUserForm() {
     setSubmitting(true);
     setError(null);
     try {
-      const result = await createUser({
+      await createUser({
         firstName,
         lastName,
         email,
+        password,
         accountType,
         initialBalanceUsd: balance,
         dateOfBirth: dob,
@@ -110,63 +121,12 @@ export default function CreateUserForm() {
         currency,
         experience,
       });
-      if (result.temporaryPassword) {
-        setCreatedPassword(result.temporaryPassword);
-      } else {
-        router.push("/admin/users");
-      }
+      router.push("/admin/users");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Could not create the user.");
     } finally {
       setSubmitting(false);
     }
-  }
-
-  async function handleCopyPassword() {
-    if (!createdPassword) return;
-    try {
-      await navigator.clipboard.writeText(createdPassword);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
-    } catch {
-      setCopied(false);
-    }
-  }
-
-  if (createdPassword) {
-    return (
-      <div className="glass-card max-w-2xl p-6 sm:p-8">
-        <div className="flex items-start gap-2.5 rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm text-emerald-300">
-          <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0" />
-          <p>
-            Account created for {firstName} {lastName} ({email}).
-          </p>
-        </div>
-
-        <div className="mt-6">
-          <p className="label-field">One-time temporary password</p>
-          <div className="flex items-center gap-2">
-            <code className="flex-1 truncate rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white">
-              {createdPassword}
-            </code>
-            <button type="button" onClick={handleCopyPassword} className="btn-outline shrink-0">
-              <Icon name={copied ? "check" : "copy"} className="h-4 w-4" />
-              {copied ? "Copied" : "Copy"}
-            </button>
-          </div>
-          <p className="mt-2 text-xs text-white/40">
-            Supabase never exposes this again after you leave this page. Send it to the client
-            through a secure channel now and tell them to change it after their first login.
-          </p>
-        </div>
-
-        <div className="mt-6 flex justify-end border-t border-white/10 pt-6">
-          <button type="button" onClick={() => router.push("/admin/users")} className="btn-gold">
-            Done
-          </button>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -285,6 +245,52 @@ export default function CreateUserForm() {
               />
             </div>
           </div>
+        </div>
+
+        <div className="flex flex-col gap-5 border-t border-white/10 pt-6">
+          <h2 className="font-display text-base font-semibold text-white">Account Security</h2>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div>
+              <label htmlFor="password" className="label-field">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  className="input-field pr-11"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  <Icon name="eye" className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+            <div>
+              <label htmlFor="confirmPassword" className="label-field">
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                className="input-field"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+          </div>
+          <p className="text-xs text-white/40">
+            Set the client&apos;s initial password directly and share it with them through a secure
+            channel — they can change it later from Settings.
+          </p>
         </div>
 
         <div className="flex flex-col gap-5 border-t border-white/10 pt-6">

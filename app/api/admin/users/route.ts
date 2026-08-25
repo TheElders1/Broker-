@@ -1,4 +1,3 @@
-import { randomBytes } from "crypto";
 import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/adminAuth";
 import { createAdminClient } from "@/utils/supabase/admin";
@@ -46,10 +45,6 @@ function rowToAdminUser(row: ProfileRow) {
   };
 }
 
-function generateTempPassword(): string {
-  return randomBytes(12).toString("base64url");
-}
-
 export async function GET() {
   if (!(await requireAdminSession())) {
     return NextResponse.json({ message: "Not authenticated." }, { status: 401 });
@@ -90,6 +85,7 @@ export async function POST(request: Request) {
     firstName,
     lastName,
     email,
+    password,
     accountType,
     initialBalanceUsd,
     dateOfBirth,
@@ -105,6 +101,8 @@ export async function POST(request: Request) {
     !firstName ||
     !lastName ||
     !email ||
+    typeof password !== "string" ||
+    password.length < 8 ||
     !accountType ||
     typeof initialBalanceUsd !== "number" ||
     !dateOfBirth ||
@@ -119,11 +117,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Missing or invalid fields." }, { status: 400 });
   }
 
-  const temporaryPassword = generateTempPassword();
-
   const { data: created, error: createError } = await supabase.auth.admin.createUser({
     email,
-    password: temporaryPassword,
+    password,
     email_confirm: true,
     user_metadata: { first_name: firstName, last_name: lastName },
   });
@@ -164,8 +160,5 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({
-    user: rowToAdminUser(profile as ProfileRow),
-    temporaryPassword,
-  });
+  return NextResponse.json({ user: rowToAdminUser(profile as ProfileRow) });
 }

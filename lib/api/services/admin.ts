@@ -52,11 +52,9 @@ export async function listUsers(): Promise<AdminUser[]> {
   return apiFetch<AdminUser[]>("/admin/users");
 }
 
-export async function createUser(
-  payload: CreateUserPayload
-): Promise<{ user: AdminUser; temporaryPassword?: string }> {
+export async function createUser(payload: CreateUserPayload): Promise<{ user: AdminUser }> {
   if (IS_SUPABASE_CONFIGURED) {
-    return adminApiFetch<{ user: AdminUser; temporaryPassword: string }>("/users", {
+    return adminApiFetch<{ user: AdminUser }>("/users", {
       method: "POST",
       body: payload,
     });
