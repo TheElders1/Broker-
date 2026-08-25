@@ -14,9 +14,10 @@ import { createClient } from "@/utils/supabase/client";
  *   POST /auth/forgot-password { email } -> 204
  *
  * When Supabase is configured (NEXT_PUBLIC_SUPABASE_URL set), auth runs
- * against Supabase instead — see supabase/schema.sql. Accounts are
- * created by an admin (lib/api/services/admin.ts), not self-registered,
- * so `register` below still only queues an account_request either way.
+ * against Supabase instead — see supabase/schema.sql. `register` below
+ * creates a real, immediately-usable account (self-service, via the
+ * Open Account form) alongside the admin-created path in
+ * lib/api/services/admin.ts — both land in the same `profiles` table.
  */
 
 type ProfileRow = {
@@ -118,49 +119,49 @@ export type RegistrationPayload = {
 };
 
 /**
- * `signedIn: true` means signUp returned an active session — the account
- * is immediately usable, no separate login step needed. `false` means the
- * Supabase project still has "Confirm email" turned on (Authentication >
- * Sign In / Providers > Email in the dashboard) and is withholding a
- * session until the emailed link is clicked; that toggle can't be
- * controlled from application code.
+ * `signedIn` is always true when Supabase is configured — registration
+ * goes through /api/account/register, which creates the account with
+ * email_confirm: true via the service-role client (the same mechanism
+ * the admin Create User route uses), so it's immediately usable
+ * regardless of this Supabase project's "Confirm email" setting. This
+ * function then signs in with the same password to establish the
+ * browser's session.
  */
 export async function register(payload: RegistrationPayload): Promise<AuthSession & { signedIn: boolean }> {
   if (IS_SUPABASE_CONFIGURED) {
+    const res = await fetch("/api/account/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({ message: "Could not create your account." }));
+      throw new ApiError(data.message ?? "Could not create your account.", res.status);
+    }
+
     const supabase = createClient();
-    const { data, error } = await supabase.auth.signUp({
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
       email: payload.email,
       password: payload.password,
-      options: {
-        data: {
-          first_name: payload.firstName,
-          last_name: payload.lastName,
-          date_of_birth: payload.dateOfBirth,
-          phone: payload.phone,
-          address: payload.address,
-          city: payload.city,
-          postal_code: payload.postalCode,
-          country: payload.country,
-          account_type: payload.accountType,
-          currency: payload.currency,
-          experience: payload.experience,
-        },
-      },
     });
-    if (error || !data.user) {
-      throw new ApiError(error?.message ?? "Could not create your account.", 400);
+    if (signInError || !signInData.user) {
+      throw new ApiError(
+        "Your account was created, but automatic sign-in failed. Please log in.",
+        signInError?.status ?? 500
+      );
     }
+
     return {
       user: {
-        id: data.user.id,
+        id: signInData.user.id,
         firstName: payload.firstName,
         lastName: payload.lastName,
         email: payload.email,
         accountType: payload.accountType as User["accountType"],
         kycStatus: "not_started",
-        createdAt: data.user.created_at,
+        createdAt: signInData.user.created_at,
       },
-      signedIn: Boolean(data.session),
+      signedIn: true,
     };
   }
   if (IS_DEMO_MODE) {
