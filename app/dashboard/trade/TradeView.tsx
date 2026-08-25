@@ -60,9 +60,6 @@ export default function TradeView() {
               <div>
                 <div className="flex items-center gap-2">
                   <p className="text-xs uppercase tracking-wide text-white/40">{activeMarket.category}</p>
-                  <span className="rounded-full border border-royal-400/30 bg-royal-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-royal-300">
-                    Demo Data
-                  </span>
                 </div>
                 <div className="mt-1 flex items-baseline gap-3">
                   <h2 className="font-display text-2xl font-semibold text-white">{activeMarket.symbol}</h2>

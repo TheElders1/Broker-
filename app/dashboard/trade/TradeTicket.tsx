@@ -60,7 +60,7 @@ export default function TradeTicket({
         takeProfit: takeProfit ? Number(takeProfit) : undefined,
       });
       setNotice(
-        `${side} order for ${quantity} ${symbol} submitted to the demo API layer — no real trading backend is connected yet.`
+        `${side} order for ${quantity} ${symbol} received — awaiting connection to the live execution backend.`
       );
       setNoticeTone("info");
     } catch (err) {

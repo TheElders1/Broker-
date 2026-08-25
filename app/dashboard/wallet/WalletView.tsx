@@ -144,7 +144,7 @@ function TransferForm({ onDone }: { onDone: () => void }) {
     try {
       await transferFunds({ fromAsset, toAsset, amount: Number(amount) || 0 });
       setStatus("success");
-      setMessage("Transfer request submitted to the demo API layer — no real funds moved.");
+      setMessage("Transfer request received — awaiting connection to the live funds backend.");
     } catch (err) {
       setStatus("error");
       setMessage(err instanceof ApiError ? err.message : "The transfer could not be completed.");

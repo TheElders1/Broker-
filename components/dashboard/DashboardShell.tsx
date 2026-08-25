@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import Icon from "@/components/Icon";
-import DemoBadge from "@/components/DemoBadge";
 import { DASHBOARD_NAV } from "@/lib/dashboardNav";
 import { SESSION_EXPIRED_EVENT } from "@/lib/api/client";
 import { logout } from "@/lib/api/services/auth";
@@ -126,7 +125,6 @@ export default function DashboardShell({
                 </p>
               </div>
             </div>
-            <DemoBadge />
           </header>
 
           <main className="flex-1 px-5 py-8 sm:px-8">{children}</main>

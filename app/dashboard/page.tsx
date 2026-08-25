@@ -1,6 +1,5 @@
 "use client";
 
-import Icon from "@/components/Icon";
 import CandlestickChart from "@/components/CandlestickChart";
 import LineSpark from "@/components/LineSpark";
 import { PageHeader, StatCard, Widget, EmptyState } from "@/components/dashboard/DashboardWidgets";
@@ -203,14 +202,6 @@ export default function DashboardPage() {
         </Widget>
       </div>
 
-      <div className="mt-6 flex items-start gap-3 rounded-xl2 border border-royal-400/25 bg-royal-500/10 p-5">
-        <Icon name="alert" className="mt-0.5 h-5 w-5 shrink-0 text-royal-300" />
-        <p className="text-sm leading-relaxed text-white/65">
-          This dashboard reads from the Genesis Pro LTD API service layer. While running in demo
-          mode (no backend connected), all figures shown are placeholder data, not real funds or
-          activity.
-        </p>
-      </div>
     </div>
   );
 }
