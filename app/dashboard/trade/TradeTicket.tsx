@@ -2,37 +2,70 @@
 
 import { useState } from "react";
 import Icon from "@/components/Icon";
-import { useApiResource } from "@/lib/useApiResource";
-import { listMarkets } from "@/lib/api/services/markets";
+import { formatTickerPrice } from "@/lib/useSimulatedTicker";
 import { placeOrder } from "@/lib/api/services/trading";
 import { ApiError } from "@/lib/api/client";
+import type { MarketInstrument } from "@/lib/api/types";
 
-export default function TradeTicket() {
-  const markets = useApiResource(listMarkets, []);
-  const [symbol, setSymbol] = useState<string | null>(null);
-  const [orderType, setOrderType] = useState("Market");
+const QUANTITY_PRESETS = [0.01, 0.1, 1, 5];
+
+export default function TradeTicket({
+  markets,
+  symbol,
+  onSymbolChange,
+  currentPrice,
+  bid,
+  ask,
+  decimals,
+}: {
+  markets: MarketInstrument[];
+  symbol?: string;
+  onSymbolChange: (symbol: string) => void;
+  currentPrice: number;
+  bid: number;
+  ask: number;
+  decimals: number;
+}) {
+  const [orderType, setOrderType] = useState<"Market" | "Limit" | "Stop">("Market");
   const [quantity, setQuantity] = useState("");
+  const [limitPrice, setLimitPrice] = useState("");
+  const [stopPrice, setStopPrice] = useState("");
+  const [stopLoss, setStopLoss] = useState("");
+  const [takeProfit, setTakeProfit] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
+  const [noticeTone, setNoticeTone] = useState<"info" | "error">("info");
   const [submitting, setSubmitting] = useState(false);
 
-  const activeSymbol = symbol ?? (markets.status === "success" ? markets.data[0]?.symbol : undefined);
+  const qty = Number(quantity) || 0;
+  const estimatedCost = qty * currentPrice;
 
   async function handleOrder(side: "Buy" | "Sell") {
-    if (!activeSymbol) return;
+    if (!symbol) return;
+    if (qty <= 0) {
+      setNotice("Enter a quantity greater than zero.");
+      setNoticeTone("error");
+      return;
+    }
     setSubmitting(true);
     setNotice(null);
     try {
       await placeOrder({
-        symbol: activeSymbol,
+        symbol,
         side,
-        orderType: orderType as "Market" | "Limit" | "Stop",
-        quantity: Number(quantity) || 0,
+        orderType,
+        quantity: qty,
+        limitPrice: orderType === "Limit" ? Number(limitPrice) || undefined : undefined,
+        stopPrice: orderType === "Stop" ? Number(stopPrice) || undefined : undefined,
+        stopLoss: stopLoss ? Number(stopLoss) : undefined,
+        takeProfit: takeProfit ? Number(takeProfit) : undefined,
       });
       setNotice(
-        `${side} order for ${quantity || "0"} ${activeSymbol} was submitted to the demo API layer — no real trading backend is connected yet.`
+        `${side} order for ${quantity} ${symbol} submitted to the demo API layer — no real trading backend is connected yet.`
       );
+      setNoticeTone("info");
     } catch (err) {
       setNotice(err instanceof ApiError ? err.message : "The order could not be submitted.");
+      setNoticeTone("error");
     } finally {
       setSubmitting(false);
     }
@@ -41,13 +74,19 @@ export default function TradeTicket() {
   return (
     <div className="glass-card p-6">
       {notice ? (
-        <div className="mb-5 flex items-start gap-2.5 rounded-lg border border-royal-400/30 bg-royal-500/10 p-3.5 text-sm text-royal-200">
+        <div
+          className={`mb-5 flex items-start gap-2.5 rounded-lg border p-3.5 text-sm ${
+            noticeTone === "error"
+              ? "border-rose-500/30 bg-rose-500/10 text-rose-300"
+              : "border-royal-400/30 bg-royal-500/10 text-royal-200"
+          }`}
+        >
           <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0" />
           <p>{notice}</p>
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div className="flex flex-col gap-5">
         <div>
           <label htmlFor="symbol" className="label-field">
             Symbol
@@ -55,13 +94,15 @@ export default function TradeTicket() {
           <select
             id="symbol"
             className="input-field"
-            value={activeSymbol ?? ""}
-            onChange={(e) => setSymbol(e.target.value)}
-            disabled={markets.status !== "success"}
+            value={symbol ?? ""}
+            onChange={(e) => onSymbolChange(e.target.value)}
+            disabled={markets.length === 0}
           >
-            {markets.status === "success"
-              ? markets.data.map((m) => <option key={m.symbol}>{m.symbol}</option>)
-              : <option>Loading...</option>}
+            {markets.length > 0 ? (
+              markets.map((m) => <option key={m.symbol}>{m.symbol}</option>)
+            ) : (
+              <option>Loading...</option>
+            )}
           </select>
         </div>
 
@@ -73,7 +114,7 @@ export default function TradeTicket() {
             id="orderType"
             className="input-field"
             value={orderType}
-            onChange={(e) => setOrderType(e.target.value)}
+            onChange={(e) => setOrderType(e.target.value as "Market" | "Limit" | "Stop")}
           >
             <option>Market</option>
             <option>Limit</option>
@@ -81,20 +122,106 @@ export default function TradeTicket() {
           </select>
         </div>
 
-        <div className="sm:col-span-2">
-          <label htmlFor="quantity" className="label-field">
-            Quantity
-          </label>
+        {orderType === "Limit" ? (
+          <div>
+            <label htmlFor="limitPrice" className="label-field">
+              Limit Price
+            </label>
+            <input
+              id="limitPrice"
+              type="number"
+              min="0"
+              step="0.0001"
+              placeholder={formatTickerPrice(currentPrice, decimals)}
+              className="input-field"
+              value={limitPrice}
+              onChange={(e) => setLimitPrice(e.target.value)}
+            />
+          </div>
+        ) : null}
+
+        {orderType === "Stop" ? (
+          <div>
+            <label htmlFor="stopPrice" className="label-field">
+              Stop Price
+            </label>
+            <input
+              id="stopPrice"
+              type="number"
+              min="0"
+              step="0.0001"
+              placeholder={formatTickerPrice(currentPrice, decimals)}
+              className="input-field"
+              value={stopPrice}
+              onChange={(e) => setStopPrice(e.target.value)}
+            />
+          </div>
+        ) : null}
+
+        <div>
+          <div className="flex items-center justify-between">
+            <label htmlFor="quantity" className="label-field mb-0">
+              Quantity
+            </label>
+            <div className="flex gap-1.5">
+              {QUANTITY_PRESETS.map((q) => (
+                <button
+                  key={q}
+                  type="button"
+                  onClick={() => setQuantity(String(q))}
+                  className="rounded-md border border-white/10 px-2 py-0.5 text-[11px] text-white/50 transition-colors hover:border-gold-400/40 hover:text-gold-300"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
           <input
             id="quantity"
             type="number"
             min="0"
             step="0.01"
             placeholder="0.00"
-            className="input-field"
+            className="input-field mt-2"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
           />
+          {qty > 0 ? (
+            <p className="mt-1.5 text-xs text-white/40">
+              Estimated value: {estimatedCost.toLocaleString(undefined, { style: "currency", currency: "USD" })}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-5">
+          <div>
+            <label htmlFor="stopLoss" className="label-field">
+              Stop Loss <span className="text-white/30">(optional)</span>
+            </label>
+            <input
+              id="stopLoss"
+              type="number"
+              min="0"
+              step="0.0001"
+              className="input-field"
+              value={stopLoss}
+              onChange={(e) => setStopLoss(e.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="takeProfit" className="label-field">
+              Take Profit <span className="text-white/30">(optional)</span>
+            </label>
+            <input
+              id="takeProfit"
+              type="number"
+              min="0"
+              step="0.0001"
+              className="input-field"
+              value={takeProfit}
+              onChange={(e) => setTakeProfit(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
@@ -102,18 +229,20 @@ export default function TradeTicket() {
         <button
           type="button"
           onClick={() => handleOrder("Buy")}
-          disabled={submitting || !activeSymbol}
-          className="rounded-lg bg-royal-gradient py-3 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:opacity-50"
+          disabled={submitting || !symbol}
+          className="flex flex-col items-center gap-0.5 rounded-lg bg-royal-gradient py-3 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:opacity-50"
         >
           Buy
+          <span className="text-xs font-normal tabular-nums text-white/75">{formatTickerPrice(ask, decimals)}</span>
         </button>
         <button
           type="button"
           onClick={() => handleOrder("Sell")}
-          disabled={submitting || !activeSymbol}
-          className="rounded-lg bg-gold-gradient py-3 text-sm font-semibold text-ink-950 transition-transform hover:scale-[1.02] disabled:opacity-50"
+          disabled={submitting || !symbol}
+          className="flex flex-col items-center gap-0.5 rounded-lg bg-gold-gradient py-3 text-sm font-semibold text-ink-950 transition-transform hover:scale-[1.02] disabled:opacity-50"
         >
           Sell
+          <span className="text-xs font-normal tabular-nums text-ink-950/70">{formatTickerPrice(bid, decimals)}</span>
         </button>
       </div>
     </div>

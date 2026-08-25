@@ -108,7 +108,7 @@ export default function DashboardShell({
           </div>
         ) : null}
 
-        <div className="flex min-h-screen flex-1 flex-col">
+        <div className="flex min-h-screen min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-40 flex items-center justify-between gap-4 border-b border-white/10 bg-ink-950/85 px-5 py-4 backdrop-blur-md sm:px-8">
             <div className="flex items-center gap-3">
               <button

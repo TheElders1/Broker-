@@ -17,6 +17,10 @@ export type OrderRequest = {
   side: "Buy" | "Sell";
   orderType: "Market" | "Limit" | "Stop";
   quantity: number;
+  limitPrice?: number;
+  stopPrice?: number;
+  stopLoss?: number;
+  takeProfit?: number;
 };
 
 export async function placeOrder(order: OrderRequest): Promise<Position> {
