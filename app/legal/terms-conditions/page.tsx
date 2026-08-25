@@ -22,7 +22,7 @@ export default function TermsConditionsPage() {
         {
           heading: "2. Eligibility",
           body: [
-            "You must meet the applicable minimum age and legal capacity requirements in your jurisdiction to open an account. [Insert verified eligibility and jurisdictional restrictions.]",
+            "You must be at least 18 years old and have the legal capacity to enter into a binding agreement to open an account. [Insert verified list of any jurisdictions Genesis Pro LTD does not accept clients from.]",
           ],
         },
         {
@@ -52,7 +52,7 @@ export default function TermsConditionsPage() {
         {
           heading: "7. Fees and Charges",
           body: [
-            "[Insert verified fee schedule, spreads, commissions, and any other charges applicable to each account type.]",
+            "Spreads, commission, and minimum deposit vary by account type — see Account Types for current figures. Figures shown there are representative and subject to confirmation before your account is opened.",
           ],
         },
         {
@@ -70,7 +70,7 @@ export default function TermsConditionsPage() {
         {
           heading: "10. Limitation of Liability",
           body: [
-            "To the fullest extent permitted by law, Genesis Pro LTD shall not be liable for indirect, incidental, or consequential damages arising from use of this website. [Insert verified liability terms consistent with applicable law.]",
+            "To the fullest extent permitted by law, Genesis Pro LTD shall not be liable for indirect, incidental, special, or consequential damages, or any loss of profits or trading losses, arising from your use of this website or its services. Nothing in these Terms limits liability that cannot lawfully be excluded under the law applicable to your jurisdiction.",
           ],
         },
         {

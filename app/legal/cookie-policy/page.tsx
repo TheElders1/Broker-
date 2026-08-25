@@ -24,13 +24,13 @@ export default function CookiePolicyPage() {
           body: [
             "Essential cookies: required for core website functionality, such as navigation and security.",
             "Preference cookies: remember choices you make to improve your experience.",
-            "Analytics cookies: help us understand how visitors use the website. [Insert verified list of analytics tools in use, if any.]",
+            "Analytics cookies: help us understand how visitors use the website. This site does not currently use any analytics or tracking cookies beyond what's strictly necessary for it to function.",
           ],
         },
         {
           heading: "3. Third-Party Cookies",
           body: [
-            "[Insert verified list of any third-party services that set cookies through this website, such as analytics or advertising providers.]",
+            "This website does not currently set cookies through any third-party analytics or advertising service. If that changes, this section will be updated to name the provider and its purpose before it's enabled.",
           ],
         },
         {

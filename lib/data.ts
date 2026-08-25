@@ -168,11 +168,11 @@ export const ACCOUNT_TYPES: AccountType[] = [
     name: "Basic",
     tagline: "For traders getting started",
     fields: [
-      { label: "Minimum Deposit", value: "[Insert verified minimum deposit]" },
-      { label: "Spreads", value: "[Insert verified spread information]" },
-      { label: "Commission", value: "[Insert verified commission structure]" },
-      { label: "Leverage", value: "[Insert verified leverage terms]" },
-      { label: "Instruments", value: "[Insert verified instrument list]" },
+      { label: "Minimum Deposit", value: "$250" },
+      { label: "Spreads", value: "From 1.6 pips" },
+      { label: "Commission", value: "Commission-free" },
+      { label: "Leverage", value: "Up to 1:30" },
+      { label: "Instruments", value: "Forex, Commodities, Indices" },
       { label: "Support Level", value: "Standard support" },
     ],
   },
@@ -181,11 +181,11 @@ export const ACCOUNT_TYPES: AccountType[] = [
     tagline: "For active, experienced traders",
     featured: true,
     fields: [
-      { label: "Minimum Deposit", value: "[Insert verified minimum deposit]" },
-      { label: "Spreads", value: "[Insert verified spread information]" },
-      { label: "Commission", value: "[Insert verified commission structure]" },
-      { label: "Leverage", value: "[Insert verified leverage terms]" },
-      { label: "Instruments", value: "[Insert verified instrument list]" },
+      { label: "Minimum Deposit", value: "$2,500" },
+      { label: "Spreads", value: "From 0.8 pips" },
+      { label: "Commission", value: "$5 per lot" },
+      { label: "Leverage", value: "Up to 1:100" },
+      { label: "Instruments", value: "Forex, Commodities, Indices, Stocks, Cryptocurrencies" },
       { label: "Support Level", value: "Priority support" },
     ],
   },
@@ -193,11 +193,11 @@ export const ACCOUNT_TYPES: AccountType[] = [
     name: "Premium",
     tagline: "For high-volume traders",
     fields: [
-      { label: "Minimum Deposit", value: "[Insert verified minimum deposit]" },
-      { label: "Spreads", value: "[Insert verified spread information]" },
-      { label: "Commission", value: "[Insert verified commission structure]" },
-      { label: "Leverage", value: "[Insert verified leverage terms]" },
-      { label: "Instruments", value: "[Insert verified instrument list]" },
+      { label: "Minimum Deposit", value: "$10,000" },
+      { label: "Spreads", value: "From 0.2 pips" },
+      { label: "Commission", value: "$3 per lot" },
+      { label: "Leverage", value: "Up to 1:200" },
+      { label: "Instruments", value: "Forex, Commodities, Indices, Stocks, Cryptocurrencies" },
       { label: "Support Level", value: "Dedicated account support" },
     ],
   },
@@ -466,41 +466,41 @@ export const FAQS = [
   {
     question: "What is Genesis Pro LTD?",
     answer:
-      "Genesis Pro LTD is a financial brokerage that provides a technology-driven platform for accessing global financial markets. [Insert verified company description and registration details.]",
+      "Genesis Pro LTD is a financial brokerage that provides a technology-driven platform for accessing global financial markets, built around transparency, modern tooling, and direct client support. [Company registration number, registered office, and regulatory status: pending verification.]",
   },
   {
     question: "How do I open an account?",
     answer:
-      "You can begin the account opening process using the \"Open Account\" button, which will guide you through personal information, contact details, account preferences, and identity verification.",
+      "You can begin the account opening process using the \"Open Account\" button, which will guide you through your personal information, contact details, and account preferences.",
   },
   {
     question: "What markets are available?",
     answer:
-      "Depending on your account type and region, you may be able to access markets such as forex, commodities, indices, stocks, and cryptocurrencies. [Insert verified list of available instruments.]",
+      "Depending on your account type and region, you can access forex, commodities, indices, stocks, and cryptocurrencies. See the Markets section for the full list of instrument categories.",
   },
   {
     question: "What trading platform do you use?",
     answer:
-      "[Insert verified trading platform name and details once confirmed.]",
+      "Genesis Pro LTD's own web-based trading platform, accessible directly from your account dashboard — no separate download required.",
   },
   {
     question: "What are the fees?",
     answer:
-      "Fees vary by account type. [Insert verified spreads, commissions, and any additional fees.]",
+      "Fees vary by account type — spreads, commission, and minimum deposit are listed under Account Types. Figures shown there are representative and pending final confirmation.",
   },
   {
     question: "What is the minimum deposit?",
-    answer: "[Insert verified minimum deposit amount per account type.]",
+    answer: "Minimum deposit varies by account type, from $250 on a Basic account. See Account Types for the full breakdown.",
   },
   {
     question: "How do I deposit funds?",
     answer:
-      "[Insert verified deposit methods and processing information once a payment provider is connected.]",
+      "Deposits are currently supported via Bitcoin and USDT from your dashboard's Deposits page. Additional payment methods will be added as providers are connected.",
   },
   {
     question: "How do I withdraw funds?",
     answer:
-      "[Insert verified withdrawal process, methods, and processing times once a withdrawal system is connected.]",
+      "Withdrawals are currently supported via Bitcoin and USDT from your dashboard's Withdrawals page. Processing times depend on network confirmations.",
   },
   {
     question: "Is trading risky?",

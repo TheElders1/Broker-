@@ -22,7 +22,7 @@ export default function RiskDisclosurePage() {
         {
           heading: "2. Leverage Risk",
           body: [
-            "Where leverage is available, it can magnify both gains and losses. A relatively small market movement can have a proportionally larger effect on funds deposited. [Insert verified leverage terms and applicable limits.]",
+            "Where leverage is available, it can magnify both gains and losses. A relatively small market movement can have a proportionally larger effect on funds deposited. Maximum leverage varies by account type — see Account Types for current, representative limits, which remain subject to confirmation and any applicable regulatory caps in your jurisdiction.",
           ],
         },
         {

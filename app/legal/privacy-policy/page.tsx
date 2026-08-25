@@ -16,15 +16,14 @@ export default function PrivacyPolicyPage() {
         {
           heading: "1. Information We Collect",
           body: [
-            "We may collect information you provide directly, such as your name, email address, phone number, postal address, and identity verification documents when you open an account or contact us.",
-            "We may also collect technical information such as browser type, device information, and usage data through standard web technologies. [Insert verified details of analytics or tracking tools in use, if any.]",
+            "We may collect information you provide directly, such as your name, email address, phone number, and postal address when you open an account or contact us.",
+            "We may also collect technical information such as browser type, device information, and usage data through standard web technologies. This site does not currently use analytics or tracking tools beyond what's strictly necessary for it to function.",
           ],
         },
         {
           heading: "2. How We Use Information",
           body: [
-            "Information we collect may be used to operate and improve our services, process account applications, communicate with you, comply with legal and regulatory obligations, and protect against fraud.",
-            "[Insert verified list of specific processing purposes once finalized.]",
+            "Information we collect is used to operate our services, administer your account, communicate with you, provide customer support, comply with legal and regulatory obligations, and protect against fraud.",
           ],
         },
         {
@@ -36,14 +35,13 @@ export default function PrivacyPolicyPage() {
         {
           heading: "4. Sharing of Information",
           body: [
-            "We do not sell personal information. We may share information with service providers who help us operate our platform (for example, identity verification, payment processing, or customer support providers) under appropriate confidentiality obligations.",
-            "[Insert verified list of third-party processors once contracted.]",
+            "We do not sell personal information. We share information with service providers who help us operate our platform under appropriate confidentiality and security obligations — currently Supabase, which provides our account authentication and database infrastructure. This list will be updated as additional providers (such as payment processing) are connected.",
           ],
         },
         {
           heading: "5. Data Retention",
           body: [
-            "[Insert verified data retention periods, which may be influenced by applicable financial recordkeeping and AML/KYC regulations.]",
+            "We retain account information for as long as your account remains active, plus any additional period required by applicable financial recordkeeping obligations once those are confirmed for your jurisdiction.",
           ],
         },
         {
@@ -55,7 +53,7 @@ export default function PrivacyPolicyPage() {
         {
           heading: "7. Your Rights",
           body: [
-            "Depending on your jurisdiction, you may have rights to access, correct, delete, or restrict the use of your personal information. [Insert verified process for exercising data subject rights.]",
+            "Depending on your jurisdiction, you may have rights to access, correct, delete, or restrict the use of your personal information. To exercise any of these rights, contact us using the details on our Contact page and we will respond within a reasonable timeframe.",
           ],
         },
         {
@@ -73,7 +71,7 @@ export default function PrivacyPolicyPage() {
         {
           heading: "10. Contact Us",
           body: [
-            "For questions about this Privacy Policy, contact us using the details on our Contact page. [Insert verified data protection contact / officer details.]",
+            "For questions about this Privacy Policy, contact us at genesisproltd@gmail.com or using the details on our Contact page.",
           ],
         },
       ]}

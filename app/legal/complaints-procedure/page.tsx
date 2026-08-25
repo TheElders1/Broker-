@@ -22,25 +22,25 @@ export default function ComplaintsProcedurePage() {
         {
           heading: "2. Acknowledgement",
           body: [
-            "[Insert verified acknowledgement timeframe, e.g. within X business days of receipt.]",
+            "We aim to acknowledge receipt of your complaint within 2 business days.",
           ],
         },
         {
           heading: "3. Investigation",
           body: [
-            "Complaints are reviewed by [Insert verified responsible team/department]. We aim to investigate complaints thoroughly and fairly.",
+            "Complaints are reviewed by our customer support team, escalated to a supervisor where warranted. We aim to investigate complaints thoroughly and fairly.",
           ],
         },
         {
           heading: "4. Resolution Timeframe",
           body: [
-            "[Insert verified target timeframe for providing a final response to a complaint.]",
+            "We aim to provide a final response within 15 business days of acknowledging your complaint. Where a complaint requires more time, we will let you know and provide an updated timeframe.",
           ],
         },
         {
           heading: "5. Escalation",
           body: [
-            "If you are not satisfied with the outcome of your complaint, [Insert verified escalation process, including any applicable external dispute resolution body or regulator, if relevant.]",
+            "If you are not satisfied with the outcome of your complaint, you may request that it be reviewed by senior management. [Insert verified external dispute resolution body or regulator, if applicable to your jurisdiction.]",
           ],
         },
         {

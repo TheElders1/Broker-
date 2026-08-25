@@ -22,14 +22,13 @@ export default function AmlKycPolicyPage() {
         {
           heading: "2. Customer Identification",
           body: [
-            "Before an account can be fully activated, clients are required to complete identity verification, which may include providing a valid government-issued identification document and proof of address.",
-            "[Insert verified list of accepted identification documents and verification provider once connected.]",
+            "Identity verification is not currently required to open an account. As formal verification procedures are put in place, this section will be updated with the accepted documents and process before verification is required of any client.",
           ],
         },
         {
           heading: "3. Ongoing Monitoring",
           body: [
-            "[Insert verified description of ongoing account and transaction monitoring processes.]",
+            "Automated ongoing account and transaction monitoring is not yet in place. This section will describe that process once it is implemented.",
           ],
         },
         {
